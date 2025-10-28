@@ -1,5 +1,18 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Vercel
+.vercel/
+
+# Data & Environment
+# INI PALING PENTING!
+.env.local
+sanity-export.json
+chunks.json
+
+# OS
+.DS_Store
+Thumbs.db
+
 # dependencies
 /node_modules
 /.pnp
@@ -39,3 +52,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
+.env*.local
