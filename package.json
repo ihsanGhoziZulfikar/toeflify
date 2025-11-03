@@ -12,7 +12,9 @@
     "index": "tsx scripts/index.ts"
   },
   "dependencies": {
+    "@portabletext/react": "^4.0.3",
     "@sanity/client": "^7.12.0",
+    "@sanity/image-url": "^1.2.0",
     "ai": "^5.0.86",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
