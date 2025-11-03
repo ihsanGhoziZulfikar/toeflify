@@ -1,17 +1,7 @@
 "use client";
-
-import { useState } from "react";
 import Image from "next/image";
-import {
-  ChevronRight,
-  Menu,
-  X,
-  Check,
-  ThumbsUp,
-  BookOpen,
-  Headphones,
-} from "lucide-react";
-import Footer from "../components/footer";
+import { ChevronRight, ThumbsUp, BookOpen, Headphones } from "lucide-react";
+// import Footer from "../components/footer";
 
 export default function Home() {
   return (
