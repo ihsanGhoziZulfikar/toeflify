@@ -14,8 +14,6 @@ import {
 import Footer from "../components/footer";
 
 export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
