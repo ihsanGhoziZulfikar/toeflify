@@ -1,6 +1,6 @@
-"use client";
-import Image from "next/image";
-import { ChevronRight, ThumbsUp, BookOpen, Headphones } from "lucide-react";
+'use client';
+import Image from 'next/image';
+import { ChevronRight, ThumbsUp, BookOpen, Headphones } from 'lucide-react';
 // import Footer from "../components/footer";
 
 export default function Home() {
@@ -9,7 +9,7 @@ export default function Home() {
       {/* Navigation */}
 
       {/* Hero Section */}
-      <section className="pt-32 bg-blue-50 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-15 bg-blue-50 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
@@ -165,7 +165,7 @@ export default function Home() {
               Skills?
             </h3>
             <p className="text-gray-600 max-w-2xl mx-auto mb-6">
-              Once you've mastered the parts, try our full-length TOEFL ITP
+              Once you&apos;ve mastered the parts, try our full-length TOEFL ITP
               simulation tests to check your score.
             </p>
             <button className="px-6 py-3 bg-blue-600 text-white rounded-full shadow hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 font-semibold">
