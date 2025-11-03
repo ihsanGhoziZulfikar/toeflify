@@ -52,8 +52,8 @@ export default function Home() {
             {/* Right Content - Hero Image/Illustration */}
             <div className="relative">
               <Image
-                src="/assets/images/Group 1000014998.png"
-                alt="Today's Progress"
+                src="/assets/images/side_content.png"
+                alt="content illustration"
                 width={1200}
                 height={900}
                 className="w-full h-auto max-w-2xl mx-auto"
