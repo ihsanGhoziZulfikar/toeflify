@@ -15,7 +15,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/about', label: 'About' },
 ];
 
-export default function Header() {
+export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 

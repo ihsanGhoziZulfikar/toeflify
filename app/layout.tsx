@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Rowdies, Saira } from 'next/font/google';
 import './globals.css';
-import Header from '@/components/Header';
 import CustomBreadcrumb from '@/components/CustomBreadcrumb';
+import Navbar from '@/components/Navbar';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -41,7 +41,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${rowdies.variable} ${saira.variable} antialiased`}
       >
-        <Header />
+        <Navbar />
         <CustomBreadcrumb />
         {children}
       </body>
