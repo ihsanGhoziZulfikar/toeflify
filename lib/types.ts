@@ -57,6 +57,9 @@ export interface Section {
   order: number;
   description: PortableTextBlock[];
   chapters: Chapter[];
+  totalChapters: number;
+  totalTopics: number;
+  totalSkills: number;
 }
 
 // Tipe data simple buat halaman listing
