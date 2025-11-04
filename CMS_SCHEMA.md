@@ -16,6 +16,7 @@ Struktur utamanya:
 | `name`        | `string`                 | Nama dari section (Wajib diisi).                                |
 | `coverImage`  | `image`                  | Gambar sampul untuk section.                                    |
 | `slug`        | `slug`                   | URL slug yang unik, dibuat otomatis dari `name` (Wajib diisi).  |
+| `excerpt`     | `text`                   | A short summary of the section, used for previews and SEO.      |
 | `order`       | `number`                 | Nomor urut untuk section (Wajib diisi, bilangan bulat positif). |
 | `description` | `array` (dari `block`)   | Deskripsi rich text untuk section.                              |
 | `chapters`    | `array` (dari `chapter`) | Kumpulan `chapter` yang berada di dalam section ini.            |

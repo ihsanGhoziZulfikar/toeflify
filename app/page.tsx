@@ -35,15 +35,15 @@ export default async function Home() {
               <div className="mt-12 flex items-center gap-8">
                 <div>
                   <p className="text-3xl font-bold text-gray-900">1000+</p>
-                  <p className="text-gray-600">Courses to choose from</p>
+                  <span className="text-gray-600">Courses to choose from</span>
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-gray-900">5000+</p>
-                  <p className="text-gray-600">Students Trained</p>
+                  <span className="text-gray-600">Students Trained</span>
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-gray-900">200+</p>
-                  <p className="text-gray-600">Professional Trainers</p>
+                  <span className="text-gray-600">Professional Trainers</span>
                 </div>
               </div>
             </div>
@@ -68,29 +68,13 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {sections && sections.length > 0 ? (
               sections.slice(0, 3).map((sec: SectionListing) => {
-                const descriptionText = (() => {
-                  const d = sec.description as unknown;
-                  if (!d) return 'No description available';
-                  if (typeof d === 'string') return d;
-                  if (Array.isArray(d)) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const first = d[0] as any;
-                    if (first?.children && Array.isArray(first.children)) {
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      return first.children.map((c: any) => c.text || '').join('');
-                    }
-                    if (typeof first === 'string') return first;
-                  }
-                  return 'No description available';
-                })();
-
                 return (
                   <div key={sec._id} className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_10px_25px_rgba(0,0,0,0.06)]">
                     <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-sm mb-6">
                       <BookOpen className="w-6 h-6" />
                     </div>
                     <h3 className="text-xl font-extrabold text-gray-900 leading-snug mb-3">{sec.name}</h3>
-                    <p className="text-gray-600 mb-6">{descriptionText}</p>
+                    <p className="text-gray-600 mb-6">{sec.excerpt}</p>
                     <a href={`/section/${sec.slug}`} className="group inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 transition-colors">
                       Start Learning
                       <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
@@ -121,10 +105,7 @@ export default async function Home() {
               <br />
               Skills?
             </h3>
-            <p className="text-gray-600 max-w-2xl mx-auto mb-6">
-              Once you&apos;ve mastered the parts, try our full-length TOEFL ITP
-              simulation tests to check your score.
-            </p>
+            <p className="text-gray-600 max-w-2xl mx-auto mb-6">Once you&apos;ve mastered the parts, try our full-length TOEFL ITP simulation tests to check your score.</p>
             <button className="px-6 py-3 bg-blue-600 text-white rounded-full shadow hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 font-semibold">
               Take a Full Practice Test
             </button>

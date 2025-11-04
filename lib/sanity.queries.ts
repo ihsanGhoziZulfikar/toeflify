@@ -7,6 +7,7 @@ export const sectionsListingQuery = groq`
     name,
     "slug": slug.current,
     coverImage,
+    excerpt,
     description
   }
 `;

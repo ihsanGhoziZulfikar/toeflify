@@ -68,5 +68,6 @@ export interface SectionListing {
   name: string;
   slug: string;
   coverImage?: Image;
+  excerpt?: string;
   description: PortableTextBlock[];
 }
