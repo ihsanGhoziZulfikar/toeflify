@@ -9,7 +9,8 @@
     "lint": "eslint",
     "extract": "tsx scripts/extract.ts",
     "transform": "tsx scripts/transform.ts",
-    "index": "tsx scripts/index.ts"
+    "index": "tsx scripts/index.ts",
+    "postinstall": "npm rebuild @tailwindcss/oxide lightningcss || true"
   },
   "dependencies": {
     "@portabletext/react": "^4.0.3",
