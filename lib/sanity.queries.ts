@@ -41,7 +41,10 @@ export const sectionBySlugQuery = groq`
           exercise
         }
       }
-    }
+    },
+    "totalChapters": count(chapters),
+    "totalTopics": count(chapters[].topicGroups[]),
+    "totalSkills": count(chapters[].topicGroups[].skills[])
   }
 `;
 
