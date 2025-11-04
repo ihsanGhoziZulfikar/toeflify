@@ -11,6 +11,7 @@ const GROQ_QUERY = `
     _id,
     name,
     "slug": slug.current,
+    exerpt,
     description, 
     chapters[] | order(order asc) {
       _key,
