@@ -25,8 +25,6 @@ export default async function SectionPage({ params }: PageProps) {
       </div>
     );
   }
-  console.log(JSON.stringify(section));
-
   // Page data variables
   const title = section.name;
   const description = section.description;
