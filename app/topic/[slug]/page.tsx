@@ -64,7 +64,7 @@ export default async function TopicPage({ params }: TopicPageProps) {
             title={skill.name ?? 'Untitled skill'}
             description={skill.description ?? ''}
             imageSrc={urlFor(skill.coverImage)}
-            materialHref={skill.slug?.current ?? ''}
+            materialHref={`/skill/${skill.slug || ''}`}
             exerciseHref={
               typeof skill.exercise === 'string' ? skill.exercise : ''
             }

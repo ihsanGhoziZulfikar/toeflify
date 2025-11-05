@@ -13,7 +13,7 @@ export default function SkillCard({
   title,
   description,
   imageSrc,
-  materialHref = '#',
+  materialHref,
   exerciseHref = '#',
 }: SkillCardProps) {
   return (
