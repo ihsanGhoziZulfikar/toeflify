@@ -10,13 +10,21 @@ export default function Footer() {
         {/* Column 1: Logo + Description + Socials */}
         <div className="col-span-1 md:col-span-2 flex flex-col gap-4">
           {/* Logo */}
-            <Image
-              src="/assets/toeflify-logo.png"
-              alt="Logo"
-              width={100}
-              height={40}
-              className="rounded"
-            />
+          <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-1">
+              <Image
+                src="/assets/images/logo.svg"
+                alt="logo"
+                width={30}
+                height={30}
+                className="object-contain"
+                priority
+              />
+              <span className="font-rowdies text-xl font-semibold tracking-tight text-primary">
+                TOEFLify
+              </span>
+            </Link>
+          </div>
 
           {/* Short description */}
           <p className="text-sm text-gray-600 max-w-md">
