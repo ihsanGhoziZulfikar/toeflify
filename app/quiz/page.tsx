@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import Quiz from '@/components/Quiz';
-import { useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 
 // Sample quiz data
 const sampleQuestions = [
@@ -58,10 +58,10 @@ const sampleQuestions = [
   },
 ];
 
-export default function QuizPage() {
+function QuizPageContent() {
   const router = useRouter();
-
   const params = useSearchParams();
+
   const data = params.get("data");
   const payload = data ? JSON.parse(decodeURIComponent(data)) : null;
   const fetchedRef = useRef(false);
@@ -82,7 +82,7 @@ export default function QuizPage() {
         if (!res.ok) throw new Error("Failed to fetch exercise");
         const data = await res.json();
         console.log("data:", data);
-      } catch (err: any) {
+      } catch (err) {
         console.error("error:", err);
       }
     };
@@ -92,27 +92,25 @@ export default function QuizPage() {
 
 
   const handleSubmit = (selectedOptions: Record<string, string>) => {
-    console.log('Quiz submitted with answers:', selectedOptions);
+    console.log("Quiz submitted with answers:", selectedOptions);
 
     // Calculate score
     let correctCount = 0;
     sampleQuestions.forEach((question) => {
       const selectedOptionId = selectedOptions[question.id];
-      const selectedOption = question.options.find((opt) => opt.id === selectedOptionId);
+      const selectedOption = question.options.find(
+        (opt) => opt.id === selectedOptionId
+      );
       if (selectedOption?.isCorrect) {
         correctCount++;
       }
     });
 
     const score = (correctCount / sampleQuestions.length) * 100;
-
-    // Store a sample attempt_id for demo purposes
-    // In real scenario, this would come from your API response
-    localStorage.setItem('attempt_id', 'demo_attempt_123');
-
     const percentage = 90;
-    router.push(`/quiz/result?score=${score}&percentage=${percentage}`);
 
+    localStorage.setItem("attempt_id", "demo_attempt_123");
+    router.push(`/quiz/result?score=${score}&percentage=${percentage}`);
   };
 
   return (
@@ -122,5 +120,13 @@ export default function QuizPage() {
       onSubmit={handleSubmit}
       enableUnderline={true}
     />
+  );
+}
+
+export default function QuizPage() {
+  return (
+    <Suspense fallback={<div>Loading quiz...</div>}>
+      <QuizPageContent />
+    </Suspense>
   );
 }
