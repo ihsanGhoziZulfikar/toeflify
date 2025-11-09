@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Quiz from '@/components/Quiz';
+import { useEffect, useRef } from 'react';
 
 // Sample quiz data
 const sampleQuestions = [
@@ -60,6 +61,36 @@ const sampleQuestions = [
 export default function QuizPage() {
   const router = useRouter();
 
+  const params = useSearchParams();
+  const data = params.get("data");
+  const payload = data ? JSON.parse(decodeURIComponent(data)) : null;
+  const fetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (!payload || fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    const fetchExercise = async () => {
+      try {
+        console.log("payload:", payload);
+        const res = await fetch("/api/getExercise", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch exercise");
+        const data = await res.json();
+        console.log("data:", data);
+      } catch (err: any) {
+        console.error("error:", err);
+      }
+    };
+
+    fetchExercise();
+  }, [payload]);
+
+
   const handleSubmit = (selectedOptions: Record<string, string>) => {
     console.log('Quiz submitted with answers:', selectedOptions);
 
@@ -79,14 +110,9 @@ export default function QuizPage() {
     // In real scenario, this would come from your API response
     localStorage.setItem('attempt_id', 'demo_attempt_123');
 
-    // Show score and ask if user wants to review
-    const reviewChoice = confirm(
-      `Quiz completed! Your score: ${score.toFixed(0)}% (${correctCount}/${sampleQuestions.length} correct)\n\nWould you like to review your answers?`
-    );
+    const percentage = 90;
+    router.push(`/quiz/result?score=${score}&percentage=${percentage}`);
 
-    if (reviewChoice) {
-      router.push('/quiz/review');
-    }
   };
 
   return (
