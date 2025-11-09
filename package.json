@@ -12,6 +12,7 @@
     "index": "tsx scripts/index.ts"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^2.0.28",
     "@portabletext/react": "^4.0.3",
     "@radix-ui/react-slot": "^1.2.4",
     "@sanity/client": "^7.12.0",

@@ -56,12 +56,13 @@ export const sectionPathsQuery = groq`
   }
 `;
 
-export const getSkillsQuery = groq`
+export const getSkillListQuery = groq`
   *[_type == "section"]{
     chapters[]{
       topicGroups[]{
         skills[]{ 
-          name 
+          name,
+          slug, 
         }
       }
     }

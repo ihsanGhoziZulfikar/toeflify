@@ -1,10 +1,20 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Quiz from '@/components/Quiz';
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
-// Sample quiz data
+interface GeneratedQuestion {
+  questionText: string;
+  options: string[];
+  correctAnswerIndex: number;
+  explanation?: string;
+}
+
+interface GeneratedQuiz {
+  questions: GeneratedQuestion[];
+}
+
 const sampleQuestions = [
   {
     id: '1',
@@ -60,67 +70,44 @@ const sampleQuestions = [
 
 function QuizPageContent() {
   const router = useRouter();
-  const params = useSearchParams();
-
-  const data = params.get("data");
-  const payload = data ? JSON.parse(decodeURIComponent(data)) : null;
-  const fetchedRef = useRef(false);
+  const [questions, setQuestions] = useState<any[]>(sampleQuestions);
+  const [quizTitle, setQuizTitle] = useState('TOEFL Practice Quiz');
 
   useEffect(() => {
-    if (!payload || fetchedRef.current) return;
-    fetchedRef.current = true;
-
-    const fetchExercise = async () => {
+    const storedQuiz = sessionStorage.getItem('customQuiz');
+    if (storedQuiz) {
       try {
-        console.log("payload:", payload);
-        const res = await fetch("/api/getExercise", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        if (!res.ok) throw new Error("Failed to fetch exercise");
-        const data = await res.json();
-        console.log("data:", data);
-      } catch (err) {
-        console.error("error:", err);
+        const quizData: GeneratedQuiz = JSON.parse(storedQuiz);
+        const transformedQuestions = quizData.questions.map((q, index) => ({
+          id: `q-${index}`,
+          text: q.questionText,
+          options: q.options.map((opt, optIndex) => ({
+            id: `q-${index}-opt-${optIndex}`,
+            text: opt,
+            isCorrect: optIndex === q.correctAnswerIndex,
+          })),
+          explanation: q.explanation,
+        }));
+        setQuestions(transformedQuestions);
+        setQuizTitle('Your Custom Generated Quiz');
+      } catch (error) {
+        console.error('Failed to parse custom quiz data:', error);
+        setQuestions(sampleQuestions);
       }
-    };
-
-    fetchExercise();
-  }, [payload]);
-
+    }
+  }, []);
 
   const handleSubmit = (selectedOptions: Record<string, string>) => {
-    console.log("Quiz submitted with answers:", selectedOptions);
-
-    // Calculate score
-    let correctCount = 0;
-    sampleQuestions.forEach((question) => {
-      const selectedOptionId = selectedOptions[question.id];
-      const selectedOption = question.options.find(
-        (opt) => opt.id === selectedOptionId
-      );
-      if (selectedOption?.isCorrect) {
-        correctCount++;
-      }
-    });
-
-    const score = (correctCount / sampleQuestions.length) * 100;
-    const percentage = 90;
-
-    localStorage.setItem("attempt_id", "demo_attempt_123");
-    router.push(`/quiz/result?score=${score}&percentage=${percentage}`);
+    console.log('Quiz submitted with answers:', selectedOptions);
+    const reviewData = {
+      questions: questions,
+      userAnswers: selectedOptions,
+    };
+    sessionStorage.setItem('quizReviewData', JSON.stringify(reviewData));
+    router.push(`/quiz/result`);
   };
 
-  return (
-    <Quiz
-      title="TOEFL Practice Quiz"
-      questions={sampleQuestions}
-      onSubmit={handleSubmit}
-      enableUnderline={true}
-    />
-  );
+  return <Quiz title={quizTitle} questions={questions} onSubmit={handleSubmit} enableUnderline={true} />;
 }
 
 export default function QuizPage() {

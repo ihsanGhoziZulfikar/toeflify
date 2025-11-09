@@ -41,7 +41,7 @@ export async function getSectionPaths(): Promise<Array<{ slug: string }>> {
   return fetchSanity<Array<{ slug: string }>>(queries.sectionPathsQuery);
 }
 export async function getSkills(): Promise<Skill[]> {
-  return fetchSanity<Skill[]>(queries.getSkillsQuery);
+  return fetchSanity<Skill[]>(queries.getSkillListQuery);
 }
 
 // Export queries in case callers want to use them directly with fetchSanity

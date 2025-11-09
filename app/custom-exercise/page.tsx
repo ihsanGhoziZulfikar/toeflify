@@ -1,12 +1,12 @@
-import { getSkills } from "@/lib/data-manager";
-import CustomExerciseForm from "./_components/CustomExerciseForm";
+import { getSkills } from '@/lib/data-manager';
+import CustomExerciseForm from './_components/CustomExerciseForm';
 
 const toTitleCase = (str: string) =>
   str
     .toLowerCase()
-    .split(" ")
+    .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+    .join(' ');
 
 const extractSkillNames = (data: any[]): string[] => {
   const names: string[] = [];
@@ -26,7 +26,7 @@ export default async function CustomExercisePage() {
   const skills = await getSkills();
   const skillNames = extractSkillNames(skills);
 
-  console.log("Extracted skillNames:", skillNames);
+  // console.log('Extracted skillNames:', skillNames);
 
   return <CustomExerciseForm skillNames={skillNames} />;
 }

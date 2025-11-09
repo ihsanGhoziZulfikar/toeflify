@@ -20,6 +20,31 @@ export function portableTextToString(blocks: PortableTextBlock[]): string {
     .join('\n\n');
 }
 
+/**
+ * helper to download JSON data as a file in the browser
+ * @param data - The JSON data to download
+ * @param filename - The name of the file to save as
+ */
+export function downloadJSON(data: any, filename: string) {
+  // Buat string JSON dengan format yang rapi (pretty-print)
+  const jsonStr = JSON.stringify(data, null, 2);
+  // Buat Blob (file in-memory)
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  // Buat URL sementara untuk Blob
+  const url = URL.createObjectURL(blob);
+
+  // Buat elemen <a> virtual untuk memicu download
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a); // Diperlukan untuk Firefox
+  a.click(); // Klik link-nya
+
+  // Bersihkan setelah di-download
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
