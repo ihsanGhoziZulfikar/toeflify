@@ -1,6 +1,6 @@
 import { client } from './sanity.client';
 import * as queries from './sanity.queries';
-import type { Section, SectionListing } from './types';
+import type { Section, SectionListing, Skill } from './types';
 
 /**
  * Generic helper to fetch data from Sanity using a GROQ query.
@@ -39,6 +39,9 @@ export async function getSectionBySlug(slug: string): Promise<Section | null> {
 
 export async function getSectionPaths(): Promise<Array<{ slug: string }>> {
   return fetchSanity<Array<{ slug: string }>>(queries.sectionPathsQuery);
+}
+export async function getSkills(): Promise<Skill[]> {
+  return fetchSanity<Skill[]>(queries.getSkillsQuery);
 }
 
 // Export queries in case callers want to use them directly with fetchSanity
