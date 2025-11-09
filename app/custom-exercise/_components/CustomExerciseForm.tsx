@@ -4,6 +4,7 @@ import RadioSelect from "@/components/RadioSelect";
 import TextAreaInput from "@/components/TextAreaInput";
 import TextInput from "@/components/TextInput";
 import ToggleOptions from "@/components/ToggleOption";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface CustomExerciseProps {
@@ -11,6 +12,7 @@ interface CustomExerciseProps {
 }
 
 export default function CustomExercisePage({skillNames}: CustomExerciseProps) {
+  const router = useRouter();
   const [skills, setSkills] = useState<string[]>([]);
   const [topics, setTopics] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -29,25 +31,10 @@ export default function CustomExercisePage({skillNames}: CustomExerciseProps) {
       additional,
     };
 
-    const res = await fetch("/api/getExercise", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    console.log("Response:", data);
+    const query = encodeURIComponent(JSON.stringify(payload));
+    router.push(`/quiz?data=${query}`);
   };
 
-//   const skillOption = await getSkills().catch((err) => {
-//     console.error('Failed to load sections:', err);
-//     return null;
-//   });
-
-  console.log("skillOption: ", JSON.stringify(skillNames));
-
-
-  
   return (
     <div className="min-h-screen flex flex-col items-center py-10 px-4 bg-gray-50">
       {/* Title Section */}
