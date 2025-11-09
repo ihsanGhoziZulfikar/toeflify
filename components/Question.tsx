@@ -41,7 +41,7 @@ const Question: React.FC<QuestionProps> = ({
     // Match option segments like **a)** *is* (with or without space)
     const optionPattern = /\*\*[a-d]\)\*\*\s*\*[^\*]+\*/g;
     let lastIndex = 0;
-    const result: JSX.Element[] = [];
+    const result: React.ReactNode[] = [];
 
     // Try matching markdown segments
     const matches = text.matchAll(optionPattern);
