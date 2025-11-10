@@ -55,3 +55,16 @@ export const sectionPathsQuery = groq`
     "slug": slug.current
   }
 `;
+
+export const getSkillListQuery = groq`
+  *[_type == "section"]{
+    chapters[]{
+      topicGroups[]{
+        skills[]{ 
+          name,
+          slug, 
+        }
+      }
+    }
+  }
+`;
