@@ -129,3 +129,11 @@
 @utility font-saira {
   font-family: var(--font-saira), ui-sans-serif, system-ui, sans-serif;
 }
+
+@utility font-open-sans {
+  font-family: var(--font-open-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+@utility font-outfit {
+  font-family: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+}
