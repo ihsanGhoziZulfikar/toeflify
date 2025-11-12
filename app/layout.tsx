@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Rowdies, Saira } from 'next/font/google';
+import { Geist, Geist_Mono, Rowdies, Saira, Open_Sans, Outfit } from 'next/font/google';
 import './globals.css';
-import CustomBreadcrumb from '@/components/CustomBreadcrumb';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import ConditionalLayout from '@/components/ConditionalLayout';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -25,6 +23,18 @@ export const saira = Saira({
   subsets: ['latin'],
   weight: ['400', '600', '700'],
   variable: '--font-saira',
+});
+
+export const openSans = Open_Sans({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-open-sans',
+});
+
+export const outfit = Outfit({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-outfit',
 });
 
 export const metadata: Metadata = {
@@ -58,11 +68,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${rowdies.variable} ${saira.variable} antialiased`}>
-        <Navbar />
-        <CustomBreadcrumb />
-        {children}
-        <Footer />
+      <body
+        className={[
+          geistSans.variable,
+          geistMono.variable,
+          rowdies.variable,
+          saira.variable,
+          openSans.variable,
+          outfit.variable,
+          'antialiased'
+        ].join(' ')}
+      >
+        <ConditionalLayout>{children}</ConditionalLayout>
       </body>
     </html>
   );

@@ -19,31 +19,31 @@ export default async function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div>
-              <h1 className="text-3xl lg:text-4xl font-extrabold text-blue-500 leading-tight mb-6">Master Your TOEFL Score Prepare for iBT & ITP.</h1>
-              <p className="text-xl text-gray-600 mb-8">
+              <h1 className="text-3xl lg:text-4xl font-extrabold text-primary leading-tight mb-6 font-rowdies">Master Your TOEFL Score Prepare for iBT & ITP.</h1>
+              <p className="text-xl text-gray-600 mb-8 font-saira">
                 <span className="font-bold">100+ </span>
                 of lessons covering all sections: Reading, Listening, Speaking, Writing, and Structure. Learn from TOEFL experts and ace your test.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button className="px-8 py-4 bg-blue-500 font-bold text-white rounded-lg hover:bg-blue-600 transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+              <div className="flex flex-col sm:flex-row gap-4 font-open-sans">
+                <button className="px-8 py-4 bg-primary font-bold text-white rounded-lg hover:bg-blue-600 transition-all transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer">
                   View Courses
                   <ChevronRight className="w-5 h-5" strokeWidth={3} />
                 </button>
-                <button className="px-8 py-4 border border-blue-500 font-bold text-blue-500 rounded-lg hover:bg-blue-50 transition-colors">How it Works</button>
+                <button className="px-8 py-4 border border-primary font-bold text-primary rounded-lg hover:bg-white transition-colors cursor-pointer">How it Works</button>
               </div>
               {/* Trust Indicators */}
               <div className="mt-12 flex items-center gap-8">
-                <div>
-                  <p className="text-3xl font-bold text-gray-900">1000+</p>
-                  <span className="text-gray-600">Courses to choose from</span>
+                <div className='w-1/3'>
+                  <p className="text-3xl font-bold text-warning font-outfit">1000+</p>
+                  <span className="text-black font-saira">Courses to choose from</span>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-gray-900">5000+</p>
-                  <span className="text-gray-600">Students Trained</span>
+                <div className='w-1/3'>
+                  <p className="text-3xl font-bold text-primary font-outfit">5000+</p>
+                  <span className="text-black font-saira">Students Trained</span>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-gray-900">200+</p>
-                  <span className="text-gray-600">Professional Trainers</span>
+                <div className='w-1/3'>
+                  <p className="text-3xl font-bold text-danger font-outfit">200+</p>
+                  <span className="text-black font-saira">Professional Trainers</span>
                 </div>
               </div>
             </div>
@@ -60,8 +60,8 @@ export default async function Home() {
       <section className="pt-16 pb-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-5xl font-extrabold text-blue-500 mb-4">Master Every Skill</h2>
-            <p className="text-2xl text-gray-600">Our curriculum is focused on the three core pillars of the ITP test. Choose your focus to begin.</p>
+            <h2 className="text-4xl font-extrabold text-primary mb-4 font-rowdies">Master Every Skill</h2>
+            <p className="text-xl text-gray-600 font-saira">Our curriculum is focused on the three core pillars of the ITP test. Choose your focus to begin.</p>
           </div>
 
           {/* Skill Cards (from Sanity sections) */}
@@ -73,9 +73,9 @@ export default async function Home() {
                     <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-sm mb-6">
                       <BookOpen className="w-6 h-6" />
                     </div>
-                    <h3 className="text-xl font-extrabold text-gray-900 leading-snug mb-3">{sec.name}</h3>
-                    <p className="text-gray-600 mb-6">{sec.excerpt}</p>
-                    <a href={`/section/${sec.slug}`} className="group inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 transition-colors">
+                    <h3 className="text-xl font-extrabold text-gray-900 leading-snug mb-3 font-rowdies">{sec.name}</h3>
+                    <p className="text-gray-600 mb-6 font-saira">{sec.excerpt}</p>
+                    <a href={`/section/${sec.slug}`} className="group inline-flex items-center text-primary font-semibold hover:text-blue-700 transition-colors font-saira">
                       Start Learning
                       <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                     </a>
@@ -89,7 +89,7 @@ export default async function Home() {
 
           {/* See More Button */}
           <div className="text-center mt-6">
-            <button className="px-10 py-2 font-semibold bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">
+            <button className="px-10 py-2 font-semibold bg-primary text-white rounded-lg shadow cursor-pointer hover:bg-blue-600 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">
               See More
             </button>
           </div>
@@ -100,13 +100,13 @@ export default async function Home() {
       <section className="pt-6 pb-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="bg-blue-50 rounded-2xl shadow-sm p-10 md:p-14 text-center">
-            <h3 className="text-3xl md:text-4xl font-extrabold text-blue-600 leading-tight mb-4">
+            <h3 className="text-3xl md:text-4xl font-extrabold text-primary leading-tight mb-4">
               Ready to Test Your
               <br />
               Skills?
             </h3>
             <p className="text-gray-600 max-w-2xl mx-auto mb-6">Once you&apos;ve mastered the parts, try our full-length TOEFL ITP simulation tests to check your score.</p>
-            <button className="px-6 py-3 bg-blue-600 text-white rounded-full shadow hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 font-semibold">
+            <button className="px-6 py-3 bg-primary text-white rounded-full shadow hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 font-semibold cursor-pointer">
               Take a Full Practice Test
             </button>
           </div>
