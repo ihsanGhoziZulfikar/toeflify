@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Rowdies, Saira, Open_Sans, Outfit } from 'next/font/google';
 import './globals.css';
-import CustomBreadcrumb from '@/components/CustomBreadcrumb';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import ConditionalLayout from '@/components/ConditionalLayout';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -70,19 +68,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`
-        ${geistSans.variable} 
-        ${geistMono.variable} 
-        ${rowdies.variable} 
-        ${saira.variable} 
-        ${openSans.variable}
-        ${outfit.variable}
-        antialiased`}
-        >
-        <Navbar />
-        <CustomBreadcrumb />
-        {children}
-        <Footer />
+      <body
+        className={[
+          geistSans.variable,
+          geistMono.variable,
+          rowdies.variable,
+          saira.variable,
+          openSans.variable,
+          outfit.variable,
+          'antialiased'
+        ].join(' ')}
+      >
+        <ConditionalLayout>{children}</ConditionalLayout>
       </body>
     </html>
   );
