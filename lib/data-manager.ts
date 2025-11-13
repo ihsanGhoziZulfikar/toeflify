@@ -117,5 +117,9 @@ export async function getSkillBySlug(skillSlug: string) {
   return null;
 }
 
+export async function getSectionFilters(): Promise<Section[]> {
+  return fetchSanity<Section[]>(queries.getSectionFiltersQuery);
+}
+
 // Export queries in case callers want to use them directly with fetchSanity
 export { queries };
