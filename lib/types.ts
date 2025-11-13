@@ -19,6 +19,7 @@ export interface Skill {
   _key: string;
   name?: string;
   slug?: Slug;
+  slug_str: string;
   coverImage?: Image;
   order: number;
   description?: string;
@@ -31,6 +32,7 @@ export interface TopicGroup {
   _key: string;
   name?: string;
   slug?: Slug;
+  slug_str?: string;
   coverImage?: Image;
   description: PortableTextBlock[];
   skills: Skill[];
@@ -41,6 +43,7 @@ export interface Chapter {
   _key: string;
   name?: string;
   slug?: Slug;
+  slug_str?: string;
   coverImage?: Image;
   order: number;
   description: PortableTextBlock[];
@@ -53,6 +56,7 @@ export interface Section {
   _type: 'section';
   name: string;
   slug: Slug;
+  slug_str?: string;
   coverImage?: Image;
   order: number;
   description: PortableTextBlock[];
