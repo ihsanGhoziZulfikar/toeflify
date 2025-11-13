@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import Navbar from '@/components/Navbar';
-import CustomBreadcrumb from '@/components/CustomBreadcrumb';
 import Footer from '@/components/Footer';
 
 export default function ConditionalLayout({
@@ -20,7 +19,6 @@ export default function ConditionalLayout({
   return (
     <>
       <Navbar />
-      <CustomBreadcrumb />
       {children}
       <Footer />
     </>

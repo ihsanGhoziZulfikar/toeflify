@@ -1,10 +1,11 @@
-import { getSectionBySlug, getSectionPaths } from "@/lib/data-manager";
-import { notFound } from "next/navigation";
+import { getSkillBySlug } from '@/lib/data-manager';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { urlFor } from '@/lib/imageFallback';
-import { PortableText } from "next-sanity";
-import { PortableTextBlock } from "@sanity/types";
-import { CustomTable } from "@/lib/types";
+import { PortableText } from 'next-sanity';
+import { PortableTextBlock } from '@sanity/types';
+import { CustomTable } from '@/lib/types';
+import BreadcrumbLayout from '@/components/BreadcrumbLayout';
 
 interface SkillHeaderProps {
   title: string;
@@ -29,7 +30,6 @@ interface SkillPageProps {
   };
 }
 
-
 function SkillHeader({ title, description, imageSrc }: SkillHeaderProps) {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -49,7 +49,7 @@ function SkillHeader({ title, description, imageSrc }: SkillHeaderProps) {
             </div>
           )}
         </div>
-        
+
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{title}</h1>
           <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
@@ -79,25 +79,6 @@ function ExerciseSection({ title, instruction, items }: ExerciseSectionProps) {
     </div>
   );
 }
-async function getSkillBySlug(skillSlug: string){
-  const sectionPaths = await getSectionPaths();
-    for (const { slug: sectionSlug } of sectionPaths) {
-      const section = await getSectionBySlug(sectionSlug);
-      if (!section) continue;
-
-      for (const chapter of section.chapters ?? []) {
-        for (const topicGroup of chapter.topicGroups ?? []) {
-          const skill = topicGroup.skills?.find(
-            (sk) => (sk.slug as any) === skillSlug
-          );
-          if (skill) {
-            return { section, chapter, topicGroup, skill };
-          }
-        }
-      }
-    }
-    return null;
-}
 
 export default async function SkillPage({ params }: SkillPageProps) {
   const { slug: skillSlug } = await params;
@@ -114,30 +95,32 @@ export default async function SkillPage({ params }: SkillPageProps) {
   const { skill } = hit;
 
   const skillData = {
-    name: skill.name ?? "",
+    name: skill.name ?? '',
     image: skill.coverImage,
-    description: skill.description ?? "",
+    description: skill.description ?? '',
     content: skill.content,
     exercise: skill.exercise,
-  }
-
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <SkillHeader title={skillData.name} description={skillData.description} imageSrc={urlFor(skillData.image)} />
+    <BreadcrumbLayout type="skill" slug={skillSlug}>
+      <div className="min-h-screen bg-gray-50">
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <SkillHeader
+            title={skillData.name}
+            description={skillData.description}
+            imageSrc={urlFor(skillData.image)}
+          />
 
-        <ContentSection
-          title={skillData.name}
-          content={skillData.content}
-        />
+          <ContentSection title={skillData.name} content={skillData.content} />
 
-        <ExerciseSection
-          title="Exercise"
-          instruction="Complete the following exercises:"
-          items={skillData.exercise}
-        />
-      </main>
-    </div>
+          <ExerciseSection
+            title="Exercise"
+            instruction="Complete the following exercises:"
+            items={skillData.exercise}
+          />
+        </main>
+      </div>
+    </BreadcrumbLayout>
   );
 }

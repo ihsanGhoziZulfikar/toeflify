@@ -5,7 +5,7 @@ import "../themes/index.css";
 
 export default function Footer() {
   return (
-    <footer className="bg-white text-gray-700 mt-12 py-10">
+    <footer className="bg-white text-gray-700 py-10">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
         {/* Logo + Description + Socials */}
         <div className="col-span-1 md:col-span-2 flex flex-col gap-4">
