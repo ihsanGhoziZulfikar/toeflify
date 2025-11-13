@@ -2,7 +2,7 @@
 
 import { Section } from '@/lib/types';
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, X, Search } from 'lucide-react';
 
 export default function FilterSidebar({
   filterData,
@@ -15,6 +15,7 @@ export default function FilterSidebar({
   const [chapter, setChapter] = useState<string | null>(null);
   const [topic, setTopic] = useState<string | null>(null);
   const [openDropdown, setOpenDropdown] = useState<'section' | 'chapter' | 'topic' | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const selectedSection = filterData?.find((s) => s.slug_str === section);
   const selectedChapter = selectedSection?.chapters?.find((c) => c.slug_str === chapter);
@@ -111,6 +112,25 @@ export default function FilterSidebar({
 
   return (
     <div className="w-72 rounded-lg shadow-md p-5 h-fit overflow-y-auto">
+      {/* Search Input */}
+      <div className="relative mb-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-gray-200 pl-10 pr-3 py-2 rounded-2xl focus:ring-2 focus:ring-blue-300 focus:outline-none transition text-sm"
+          />
+        </div>
+      </div>
+
+      {/* Topics Label */}
+      <div className="mb-2">
+        <h3 className="text-sm font-semibold text-gray-700">Topics</h3>
+      </div>
+
       {renderDropdown('section', filterData, section)}
 
       {selectedSection?.chapters &&
