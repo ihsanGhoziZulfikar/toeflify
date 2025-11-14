@@ -16,7 +16,6 @@ export async function POST(request: Request) {
     }
 
     const quizData = await request.json();
-    console.log('Received quiz data to save:', quizData);
 
     if (!quizData.topics || !quizData.questions?.length) {
       return NextResponse.json(
