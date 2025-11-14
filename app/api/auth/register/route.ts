@@ -30,6 +30,7 @@ export async function POST(req: Request) {
         data: {
           full_name: fullName,
         },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`,
       },
     });
 
