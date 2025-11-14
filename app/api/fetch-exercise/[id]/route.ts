@@ -40,7 +40,6 @@ export async function GET(
       .order('question_order', { ascending: true });
 
     if (questionsError) throw questionsError;
-n
     const questionsWithOptions = await Promise.all(
       questions.map(async (question) => {
         const { data: options, error: optionsError } = await supabase
