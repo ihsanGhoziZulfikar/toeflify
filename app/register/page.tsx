@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Eye, EyeOff } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface Slide {
   image: string;
@@ -14,30 +14,32 @@ interface Slide {
 export default function RegisterPage() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState("");
-  const [fullname, setFullname] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const slides: Slide[] = [
     {
-      image: "/assets/images/login-1.png",
-      title: "Stay Curious",
-      description: "Learn English easily and effectively, anytime and anywhere.",
+      image: '/assets/images/login-1.png',
+      title: 'Stay Curious',
+      description:
+        'Learn English easily and effectively, anytime and anywhere.',
     },
     {
-      image: "/assets/images/login-2.png",
-      title: "Practice Makes Perfect",
-      description: "Sharpen your skills with daily TOEFL-style exercises.",
+      image: '/assets/images/login-2.png',
+      title: 'Practice Makes Perfect',
+      description: 'Sharpen your skills with daily TOEFL-style exercises.',
     },
     {
-      image: "/assets/images/login-1.png",
-      title: "Track Your Progress",
-      description: "Monitor your learning journey and achievements over time.",
+      image: '/assets/images/login-1.png',
+      title: 'Track Your Progress',
+      description: 'Monitor your learning journey and achievements over time.',
     },
   ];
 
@@ -48,35 +50,61 @@ export default function RegisterPage() {
     return () => clearInterval(interval);
   }, [slides.length]);
 
-  const handleRegister = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setErrorMessage(null);
+    setSuccessMessage(null);
 
-    // Validate password match
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match!");
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          fullName: fullName,
+          password: password,
+          confirmPassword: confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        let errorMsg = data.error;
+
+        if (data.details) {
+          const firstErrorKey = Object.keys(
+            data.details
+          )[0] as keyof typeof data.details;
+          if (data.details[firstErrorKey]) {
+            errorMsg = data.details[firstErrorKey][0];
+          }
+        }
+
+        setErrorMessage(errorMsg);
+      } else {
+        setSuccessMessage(data.message);
+
+        setEmail('');
+        setFullName('');
+        setPassword('');
+        setConfirmPassword('');
+
+        setTimeout(() => {
+          router.push('/login');
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Register request failed:', error);
+      setErrorMessage(
+        'An unexpected network error occurred. Please try again.'
+      );
+    } finally {
       setLoading(false);
-      return;
     }
-
-    // Validate password length
-    if (password.length < 8) {
-      setErrorMessage("Password must be at least 8 characters!");
-      setLoading(false);
-      return;
-    }
-
-    // Simulate loading delay
-    setTimeout(() => {
-      // Dummy register - just save to localStorage and redirect
-      localStorage.setItem("username", username);
-      localStorage.setItem("fullname", fullname);
-      localStorage.setItem("user_id", "dummy-user-id");
-
-      setLoading(false);
-      router.push("/");
-    }, 1000);
   };
 
   return (
@@ -102,7 +130,7 @@ export default function RegisterPage() {
             <div
               key={index}
               className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                index === currentIndex ? "bg-white" : "bg-gray-300"
+                index === currentIndex ? 'bg-white' : 'bg-gray-300'
               }`}
             ></div>
           ))}
@@ -129,25 +157,32 @@ export default function RegisterPage() {
             </div>
           )}
 
+          {/* Success Message */}
+          {successMessage && (
+            <div className="mb-4 text-green-700 text-sm text-center bg-green-50 border border-green-200 rounded-lg p-3">
+              {successMessage}
+            </div>
+          )}
+
           {/* Form Card */}
           <div className="bg-white shadow-lg rounded-2xl p-6 sm:p-8">
             <form onSubmit={handleRegister} className="space-y-4">
-              {/* Username */}
+              {/* Email */}
               <div>
                 <label
                   className="block text-slate-700 text-sm font-bold mb-2"
-                  htmlFor="username"
+                  htmlFor="email"
                 >
-                  Username
+                  Email
                 </label>
                 <input
                   type="text"
-                  placeholder="Your Username"
+                  placeholder="Your Email"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  id="username"
-                  name="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  id="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -156,18 +191,18 @@ export default function RegisterPage() {
               <div>
                 <label
                   className="block text-slate-700 text-sm font-bold mb-2"
-                  htmlFor="fullname"
+                  htmlFor="fullName"
                 >
-                  Fullname
+                  Full Name
                 </label>
                 <input
                   type="text"
-                  placeholder="Your Fullname"
+                  placeholder="Your Full Name"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  id="fullname"
-                  name="fullname"
-                  value={fullname}
-                  onChange={(e) => setFullname(e.target.value)}
+                  id="fullName"
+                  name="fullName"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   required
                 />
               </div>
@@ -181,8 +216,8 @@ export default function RegisterPage() {
                   Password
                 </label>
                 <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="at least 8 character"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="At least 8 character"
                   className="w-full px-4 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   id="password"
                   name="password"
@@ -194,7 +229,7 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500 focus:outline-none hover:text-gray-700"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -209,8 +244,8 @@ export default function RegisterPage() {
                   Confirm Password
                 </label>
                 <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="at least 8 character"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="At least 8 character"
                   className="w-full px-4 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   id="confirmPassword"
                   name="confirmPassword"
@@ -222,26 +257,42 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
                   className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500 focus:outline-none hover:text-gray-700"
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  aria-label={
+                    showConfirmPassword ? 'Hide password' : 'Show password'
+                  }
                 >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
                 </button>
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={!username || !fullname || !password || !confirmPassword || loading}
+                disabled={
+                  !email ||
+                  !fullName ||
+                  !password ||
+                  !confirmPassword ||
+                  loading
+                }
                 className={`h-10 px-6 w-full rounded-md font-semibold text-white transition-all duration-300 transform flex items-center justify-center gap-2 ${
-                  !username || !fullname || !password || !confirmPassword || loading
-                    ? "bg-gray-400 cursor-not-allowed shadow-none"
-                    : "bg-blue-500 hover:bg-blue-600 hover:shadow-xl hover:scale-105 active:scale-95 shadow-lg"
+                  !email ||
+                  !fullName ||
+                  !password ||
+                  !confirmPassword ||
+                  loading
+                    ? 'bg-gray-400 cursor-not-allowed shadow-none'
+                    : 'bg-blue-500 hover:bg-blue-600 hover:shadow-xl hover:scale-105 active:scale-95 shadow-lg'
                 }`}
               >
                 {loading && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 )}
-                {loading ? "Creating Account..." : "Register"}
+                {loading ? 'Creating Account...' : 'Register'}
               </button>
 
               {/* Divider */}
@@ -250,7 +301,9 @@ export default function RegisterPage() {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or Continue With</span>
+                  <span className="px-2 bg-white text-gray-500">
+                    Or Continue With
+                  </span>
                 </div>
               </div>
 
@@ -259,7 +312,7 @@ export default function RegisterPage() {
                 type="button"
                 onClick={() => {
                   // Dummy Google register
-                  console.log("Google register clicked");
+                  console.log('Google register clicked');
                 }}
                 className="w-full h-10 px-6 border border-gray-300 rounded-md font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-3 shadow-sm hover:shadow-md"
               >
@@ -286,7 +339,7 @@ export default function RegisterPage() {
 
               {/* Login Link */}
               <p className="text-slate-600 text-center mt-4 text-sm">
-                Already have an account?{" "}
+                Already have an account?{' '}
                 <a
                   href="/login"
                   className="font-bold text-[#4682A9] hover:underline"

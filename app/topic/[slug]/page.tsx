@@ -11,7 +11,7 @@ interface TopicPageProps {
 export default async function TopicPage({ params }: TopicPageProps) {
   const { slug: topicSlug } = await params;
 
-  const hit = await getTopicBySlug(topicSlug).catch((err: any) => {
+  const hit = await getTopicBySlug(topicSlug).catch((err) => {
     console.error('Failed to search topic:', err);
     return null;
   });
@@ -44,7 +44,7 @@ export default async function TopicPage({ params }: TopicPageProps) {
           <div className="text-2xl font-rowdies font-bold text-primary mb-2">
             Skills
           </div>
-          {skills.map((skill: any) => (
+          {skills.map((skill) => (
             <SkillCard
               key={skill._key ?? skill.slug ?? skill.name}
               title={skill.name ?? 'Untitled skill'}
