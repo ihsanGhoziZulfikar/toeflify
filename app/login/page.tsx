@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Eye, EyeOff } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface Slide {
   image: string;
@@ -16,26 +16,26 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const slides: Slide[] = [
     {
-      image: "/assets/images/login-1.png",
-      title: "Stay Curious",
+      image: '/assets/images/login-1.png',
+      title: 'Stay Curious',
       description:
-        "Learn English easily and effectively, anytime and anywhere.",
+        'Learn English easily and effectively, anytime and anywhere.',
     },
     {
-      image: "/assets/images/login-2.png",
-      title: "Practice Makes Perfect",
-      description: "Sharpen your skills with daily TOEFL-style exercises.",
+      image: '/assets/images/login-2.png',
+      title: 'Practice Makes Perfect',
+      description: 'Sharpen your skills with daily TOEFL-style exercises.',
     },
     {
-      image: "/assets/images/login-1.png",
-      title: "Track Your Progress",
-      description: "Monitor your learning journey and achievements over time.",
+      image: '/assets/images/login-1.png',
+      title: 'Track Your Progress',
+      description: 'Monitor your learning journey and achievements over time.',
     },
   ];
 
@@ -46,20 +46,49 @@ export default function LoginPage() {
     return () => clearInterval(interval);
   }, [slides.length]);
 
-  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setErrorMessage(null);
 
-    // Simulate loading delay
-    setTimeout(() => {
-      // Dummy login - just save username to localStorage and redirect
-      localStorage.setItem("username", username);
-      localStorage.setItem("user_id", "dummy-user-id");
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
 
+      const data = await response.json();
+
+      if (!response.ok) {
+        let errorMsg = data.error;
+
+        if (data.details) {
+          if (data.details.email) {
+            errorMsg = data.details.email[0];
+          } else if (data.details.password) {
+            errorMsg = data.details.password[0];
+          }
+        }
+
+        setErrorMessage(errorMsg);
+      } else {
+        router.push('/');
+        router.refresh();
+      }
+    } catch (error) {
+      console.error('Login request failed:', error);
+      setErrorMessage(
+        'An unexpected network error occurred. Please try again.'
+      );
+    } finally {
       setLoading(false);
-      router.push("/");
-    }, 1000);
+    }
   };
 
   return (
@@ -85,7 +114,7 @@ export default function LoginPage() {
             <div
               key={index}
               className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                index === currentIndex ? "bg-white" : "bg-gray-300"
+                index === currentIndex ? 'bg-white' : 'bg-gray-300'
               }`}
             ></div>
           ))}
@@ -115,22 +144,22 @@ export default function LoginPage() {
           {/* Form Card */}
           <div className="bg-white shadow-lg rounded-2xl p-6 sm:p-8">
             <form onSubmit={handleLogin} className="space-y-4">
-              {/* Username */}
+              {/* Email */}
               <div>
                 <label
                   className="block text-slate-700 text-sm font-bold mb-2"
-                  htmlFor="username"
+                  htmlFor="email"
                 >
-                  Username
+                  Email
                 </label>
                 <input
-                  type="text"
-                  placeholder="Your Username"
+                  type="email"
+                  placeholder="Your Email"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  id="username"
-                  name="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  id="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -144,7 +173,7 @@ export default function LoginPage() {
                   Password
                 </label>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="*********"
                   className="w-full px-4 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   id="password"
@@ -157,7 +186,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500 focus:outline-none hover:text-gray-700"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -166,17 +195,17 @@ export default function LoginPage() {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={!username || !password || loading}
+                disabled={!email || !password || loading}
                 className={`h-10 px-6 w-full rounded-md font-semibold text-white transition-all duration-300 transform flex items-center justify-center gap-2 ${
-                  !username || !password || loading
-                    ? "bg-gray-400 cursor-not-allowed shadow-none"
-                    : "bg-blue-500 hover:bg-blue-600 hover:shadow-xl hover:scale-105 active:scale-95 shadow-lg"
+                  !email || !password || loading
+                    ? 'bg-gray-400 cursor-not-allowed shadow-none'
+                    : 'bg-blue-500 hover:bg-blue-600 hover:shadow-xl hover:scale-105 active:scale-95 shadow-lg'
                 }`}
               >
                 {loading && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 )}
-                {loading ? "Logging in..." : "Login"}
+                {loading ? 'Logging in...' : 'Login'}
               </button>
 
               {/* Divider */}
@@ -185,7 +214,9 @@ export default function LoginPage() {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or Continue With</span>
+                  <span className="px-2 bg-white text-gray-500">
+                    Or Continue With
+                  </span>
                 </div>
               </div>
 
@@ -194,7 +225,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => {
                   // Dummy Google login
-                  console.log("Google login clicked");
+                  console.log('Google login clicked');
                 }}
                 className="w-full h-10 px-6 border border-gray-300 rounded-md font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-3 shadow-sm hover:shadow-md"
               >
@@ -221,7 +252,7 @@ export default function LoginPage() {
 
               {/* Register Link */}
               <p className="text-slate-600 text-center mt-4 text-sm">
-                Don&apos;t have an account?{" "}
+                Don&apos;t have an account?{' '}
                 <a
                   href="/register"
                   className="font-bold text-[#4682A9] hover:underline"

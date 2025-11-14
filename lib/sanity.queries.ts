@@ -68,3 +68,26 @@ export const getSkillListQuery = groq`
     }
   }
 `;
+
+export const getSectionFiltersQuery = groq`
+  *[_type == "section"] | order(order asc) {
+    _id,
+    name,
+    "slug_str": slug.current,
+    chapters[] | order(order asc) {
+      _key,
+      name,
+      "slug_str": slug.current,
+      topicGroups[] | order(order asc) {
+        _key,
+        name,
+        "slug_str": slug.current,
+        skills[] | order(order asc) {
+          _key,
+          name,
+          "slug_str": slug.current
+        }
+      }
+    }
+  }
+`;

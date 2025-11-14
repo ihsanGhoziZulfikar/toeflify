@@ -59,7 +59,7 @@ function SkillHeader({ title, description, imageSrc }: SkillHeaderProps) {
   );
 }
 
-function ContentSection({ title, content }: ContentSectionProps) {
+function ContentSection({ content }: ContentSectionProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6 mb-4">
       {/* <h2 className="text-xl font-bold text-gray-900 mb-4">{title}</h2> */}
