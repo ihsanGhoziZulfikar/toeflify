@@ -10,6 +10,7 @@ import { useState } from 'react';
 interface CustomExerciseProps {
   skillNames: string[];
 }
+
 export default function CustomExercisePage({ skillNames }: CustomExerciseProps) {
   const router = useRouter();
   const [skills, setSkills] = useState<string[]>([]);
@@ -34,6 +35,7 @@ export default function CustomExercisePage({ skillNames }: CustomExerciseProps) 
     };
 
     try {
+
       const response = await fetch('/api/generate-exercise', {
         method: 'POST',
         headers: {
@@ -62,16 +64,38 @@ export default function CustomExercisePage({ skillNames }: CustomExerciseProps) 
 
       const generatedQuiz = JSON.parse(fullResponse);
 
-      console.log('Success generate', generatedQuiz);
+      const quizToSave = {
+        topics: topics,
+        title: `Custom Exercise: ${topics || 'Untitled'}`,
+        difficulty: difficulty || 'medium',
+        skills: skills,
+        questions: generatedQuiz.questions.map((q: any) => ({
+          questionText: q.questionText,
+          options: q.options,
+          correctAnswerIndex: q.correctAnswerIndex,
+          explanation: toggles.explanation ? q.explanation : undefined
+        }))
+      };
 
-      sessionStorage.setItem('customQuiz', JSON.stringify(generatedQuiz));
+      const saveResponse = await fetch('/api/quiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(quizToSave),
+      });
 
-      router.push('/quiz');
+      if (!saveResponse.ok) {
+        throw new Error(`Save API error: ${saveResponse.statusText}`);
+      }
 
-      // allow downloading the JSON
-      // downloadJSON(generatedQuiz, 'generated-quiz.json');
+      const saveResult = await saveResponse.json();
+
+      router.push(`/quiz/${saveResult.quizId}`);
+
     } catch (error) {
-      console.error('Gagal men-generate exercise:', error);
+      console.error('❌ Error generating/saving exercise:', error);
+      alert('Failed to generate or save quiz. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +105,9 @@ export default function CustomExercisePage({ skillNames }: CustomExerciseProps) 
     <div className="min-h-screen flex flex-col items-center py-10 px-4 bg-gray-50">
       <div className="text-center mb-8">
         <h1 className="text-primary text-3xl font-bold font-rowdies">Custom Exercise Generator</h1>
-        <p className="text-gray-600 mt-2 max-w-2xl">You are in control. Use our AI to build a practice set perfectly tailored to your needs. The AI will generate questions based on your configuration below.</p>
+        <p className="text-gray-600 mt-2 max-w-2xl">
+          You are in control. Use our AI to build a practice set perfectly tailored to your needs. The AI will generate questions based on your configuration below.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-3xl bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-6">
