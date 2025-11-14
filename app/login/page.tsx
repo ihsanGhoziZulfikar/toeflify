@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Eye, EyeOff } from 'lucide-react';
+import { useUserStore } from '@/lib/store/userStore';
 
 interface Slide {
   image: string;
@@ -46,13 +47,15 @@ export default function LoginPage() {
     return () => clearInterval(interval);
   }, [slides.length]);
 
+  const setProfile = useUserStore((state) => state.setProfile);
+
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setErrorMessage(null);
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,6 +81,8 @@ export default function LoginPage() {
 
         setErrorMessage(errorMsg);
       } else {
+        setProfile(data.user);
+
         router.push('/');
         router.refresh();
       }
