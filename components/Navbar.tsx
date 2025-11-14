@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import Image from 'next/image';
+import ProfileIcon from './ProfileIcon';
 
 type NavItem = { href: string; label: string };
 
@@ -17,7 +18,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);  
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -70,6 +71,8 @@ export default function Navbar() {
           >
             Custom Exercise
           </Link>
+                      
+          <ProfileIcon/>
         </div>
 
         <button

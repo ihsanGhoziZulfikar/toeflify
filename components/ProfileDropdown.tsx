@@ -1,14 +1,41 @@
 import { User, FileText, History, LogOut, Settings } from 'lucide-react';
+import { JSX } from 'react';
+import { useRouter } from "next/navigation";
 
 export default function ProfileDropdown(){
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include',
+            });
+            router.refresh();
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
+
     const userData ={
-        name: "Prabowo Subianto",
+        name: "Nurhayati Subakat",
         level: "A6",
         score: 67,
-        image: "/assets/default.jpeg"
+        image: "/assets/images/profile_default.jpg"
     }
+
+    type ProfileItem = { href?: string; label: string; icon: JSX.Element; danger?: boolean; onClick?: () => void; };
+
+    const PROFILE_ITEMS: ProfileItem[] = [
+        { href: "/profile", label: "My Profile", icon: <User size={20} /> },
+        { href: "/exam", label: "Take Exam", icon: <FileText size={20} /> },
+        { href: "/history", label: "History", icon: <History size={20} /> },
+        { href: "/settings", label: "Settings", icon: <Settings size={20} /> },
+        { onClick: handleLogout, label: "Logout", icon: <LogOut size={20} />, danger: true },
+    ];
+
     return(
-        <div className="w-full max-w-3xs shadow-xl p-5 rounded-xl flex flex-col gap-2 h-fit">
+        <div className="bg-white w-3xs shadow-xl p-5 rounded-xl flex flex-col gap-2 h-fit">
             {/* upper */}
             <div className="text-center py-3 flex flex-col gap-1">
                 {/* profile pic */}
@@ -31,26 +58,22 @@ export default function ProfileDropdown(){
 
             {/* bottom */}
             <div className="text-gray-500">
-                <div className="flex flex-row items-start hover:bg-gray-300 cursor-pointer rounded-lg gap-2 p-2">
-                    <User size={20} />
-                    <span>My Profile</span>
-                </div>
-                <div className="flex flex-row items-start hover:bg-gray-300 cursor-pointer rounded-lg gap-2 p-2">
-                    <FileText size={20} />
-                    <span>Take exam</span>
-                </div>
-                <div className="flex flex-row items-start hover:bg-gray-300 cursor-pointer rounded-lg gap-2 p-2">
-                    <History size={20} />
-                    <span>History</span>
-                </div>
-                <div className="flex flex-row items-start hover:bg-gray-300 cursor-pointer rounded-lg gap-2 p-2">
-                    <Settings size={20} />
-                    <span>Settings</span>
-                </div>
-                <div className="flex flex-row items-start hover:bg-red-600 hover:text-white cursor-pointer rounded-lg gap-2 p-2">
-                    <LogOut size={20} />
-                    <span>Logout</span>
-                </div>
+                {PROFILE_ITEMS.map((item) => (
+                    <a
+                        key={item.label}
+                        href={item.href}
+                        onClick={item.onClick}
+                        className={`flex flex-row items-start gap-2 p-2 rounded-lg cursor-pointer
+                        ${item.danger 
+                            ? "hover:bg-red-600 hover:text-white text-red-600" 
+                            : "hover:bg-gray-300"
+                        }
+                        `}
+                    >
+                        {item.icon}
+                        <span>{item.label}</span>
+                    </a>
+                ))}
             </div>
         </div>
     );

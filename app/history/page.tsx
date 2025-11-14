@@ -20,8 +20,13 @@ export default function HistoryPage() {
   ];
 
   return (
-    <div className="min-h-screen px-20 py-10 flex gap-5">
-      <ProfileDropdown />
+    <div className="min-h-screen py-10 flex justify-center w-full">
+      
+    <div className="flex gap-5 w-full max-w-6xl mx-auto">
+      <div>
+        <ProfileDropdown />
+      </div>
+      
 
       <div className="w-full mx-5">
         {/* Header */}
@@ -54,6 +59,7 @@ export default function HistoryPage() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
