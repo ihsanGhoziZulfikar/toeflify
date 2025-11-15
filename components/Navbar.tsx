@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import ProfileIcon from './ProfileIcon';
+import { useUserStore } from '@/lib/store/userStore';
 
 type NavItem = { href: string; label: string };
 
@@ -18,7 +19,9 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);  
+  const [open, setOpen] = useState(false);
+
+  const { profile, isLoading } = useUserStore();
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -71,8 +74,19 @@ export default function Navbar() {
           >
             Custom Exercise
           </Link>
-                      
-          <ProfileIcon/>
+
+          {isLoading ? (
+            <div className="w-16 h-12 rounded-full bg-primary animate-pulse"></div>
+          ) : profile ? (
+            <ProfileIcon />
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-md border border-primary bg-white text-primary font-bold px-5 py-3 text-md  font-saira"
+            >
+              Login
+            </Link>
+          )}
         </div>
 
         <button
@@ -110,10 +124,22 @@ export default function Navbar() {
               <Link
                 href="/custom-exercise"
                 onClick={() => setOpen(false)}
-                className="flex-1 rounded-md bg-primary font-bold text-center px-5 py-3 text-sm text-white font-saira"
+                className="flex items-center justify-center flex-1 rounded-md bg-primary font-bold text-center px-5 py-3 text-sm text-white font-saira"
               >
                 Custom Exercise
               </Link>
+              {isLoading ? (
+                <div className="w-16 h-12 rounded-full bg-primary animate-pulse"></div>
+              ) : profile ? (
+                <ProfileIcon />
+              ) : (
+                <Link
+                  href="/login"
+                  className="rounded-md border border-primary bg-white text-primary font-bold px-5 py-3 text-sm font-saira"
+                >
+                  Login
+                </Link>
+              )}
             </li>
           </ul>
         </div>

@@ -5,6 +5,9 @@ export type Profile = {
   id: string;
   full_name: string;
   email: string;
+  image_url?: string;
+  level: string;
+  score: number;
 };
 
 interface UserState {
@@ -22,24 +25,35 @@ export const useUserStore = create<UserState>((set) => ({
   fetchProfile: async () => {
     set({ isLoading: true });
     const supabase = createSupabaseBrowserClient();
+
     try {
       const {
         data: { user },
         error: authError,
       } = await supabase.auth.getUser();
+
       if (authError || !user) {
         throw authError || new Error('No user found');
       }
 
-      const { data, error } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('id, full_name, email')
+        .select('id, full_name, image_url, level, score')
         .eq('id', user.id)
         .single();
 
-      if (error) throw error;
+      if (profileError) throw profileError;
 
-      set({ profile: data, isLoading: false });
+      const combinedProfile: Profile = {
+        id: user.id,
+        full_name: profileData.full_name,
+        image_url: profileData.image_url,
+        level: profileData.level,
+        score: profileData.score,
+        email: user.email!,
+      };
+
+      set({ profile: combinedProfile, isLoading: false });
     } catch (error) {
       console.log(error);
 
