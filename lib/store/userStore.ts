@@ -46,8 +46,8 @@ export const useUserStore = create<UserState>((set) => ({
 
       const combinedProfile: Profile = {
         id: user.id,
-        full_name: profileData.full_name,
-        image_url: profileData.image_url,
+        full_name: profileData.full_name ?? user.user_metadata.full_name,
+        image_url: profileData.image_url ?? user.user_metadata.avatar_url,
         level: profileData.level,
         score: profileData.score,
         email: user.email!,
