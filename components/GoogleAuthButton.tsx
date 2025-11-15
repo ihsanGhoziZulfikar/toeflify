@@ -6,11 +6,12 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 export default function GoogleAuthButton() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const supabase = createSupabaseBrowserClient();
 
   const handleLoginWithGoogle = async () => {
     setLoading(true);
     setErrorMessage(null);
+
+    const supabase = createSupabaseBrowserClient();
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
