@@ -1,3 +1,5 @@
+'use client';
+
 import { User, FileText, History, LogOut, Settings } from 'lucide-react';
 import { JSX } from 'react';
 import { useRouter } from 'next/navigation';
