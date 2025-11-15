@@ -3,10 +3,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
+import { useUserStore } from '@/lib/store/userStore';
 
 export default function ProfileIcon() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { profile } = useUserStore();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -28,13 +30,17 @@ export default function ProfileIcon() {
       >
         <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
           <img
-            src="/assets/images/profile_default.jpg"
+            src={profile?.image_url ?? '/assets/images/profile_default.jpg'}
             alt="profile"
             className="w-full h-full object-cover"
           />
         </div>
         <div className="p-2">
-          <ChevronDown />
+          <ChevronDown
+            className={`transition-transform duration-200 ${
+              open ? 'rotate-180 text-primary' : ''
+            }`}
+          />
         </div>
       </div>
 
