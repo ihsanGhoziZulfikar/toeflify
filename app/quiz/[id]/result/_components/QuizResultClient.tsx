@@ -1,16 +1,19 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import CompleteQuizImage from 'public/assets/images/completed-quiz.png';
+import { Suspense } from 'react';
 
-export default function QuizResultClient() {
+function QuizResultClientComponent() {
   const router = useRouter();
   const [score, setScore] = useState(0);
   const [percentage, setPercentage] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
+  const searchParams = useSearchParams();
+  const attemptId = searchParams.get("attemptId");
 
   useEffect(() => {
     const reviewDataStr = sessionStorage.getItem('quizReviewData');
@@ -67,7 +70,7 @@ export default function QuizResultClient() {
 
         {/* Buttons */}
         <div className="flex justify-center gap-8">
-          <button className="bg-yellow-400 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-all transform hover:-translate-y-0.5" onClick={() => router.push('/quiz/review')}>
+          <button className="bg-yellow-400 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-all transform hover:-translate-y-0.5" onClick={() => router.push('/quiz/review?attemptId=' + attemptId)}>
             REVIEW EXERCISE
           </button>
           <button className="bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all transform hover:-translate-y-0.5" onClick={() => router.push('/')}>
@@ -77,4 +80,12 @@ export default function QuizResultClient() {
       </div>
     </div>
   );
+}
+
+export default function QuizResultClient() {
+  return (
+    <Suspense>
+      <QuizResultClientComponent /> 
+    </Suspense>
+  )
 }

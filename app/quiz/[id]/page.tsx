@@ -63,7 +63,7 @@ function QuizPageContent() {
     try {
 
       let correctCount = 0;
-      const answersData = questions.map((q, index) => {
+      const answersData = questions.map((q) => {
         const selectedOptionId = selectedOptions[q.id];
         const selectedOptionIndex = q.options.findIndex((opt: { id: string; }) => opt.id === selectedOptionId);
         const isCorrect = q.options[selectedOptionIndex]?.isCorrect || false;
@@ -85,30 +85,31 @@ function QuizPageContent() {
       };
       sessionStorage.setItem('quizReviewData', JSON.stringify(reviewData));
 
-      try {
-        const response = await fetch('/api/quiz/attempt', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            quiz_id: quizId,
-            score: correctCount,
-            total_questions: questions.length,
-            percentage: percentage,
-            answers: answersData,
-            quiz_title: quizTitle,
-          }),
-        });
+      const response = await fetch('/api/quiz/attempt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          quiz_id: quizId,
+          score: correctCount,
+          total_questions: questions.length,
+          percentage,
+          answers: answersData,
+          quiz_title: quizTitle,
+        }),
+      });
 
-        if (!response.ok) {
-          throw new Error(`❌ Failed to save attempt: ${response.statusText}`);
-        }
-      } catch (error) {
-        console.error('❌ Failed to save attempt:', error);
+      if (!response.ok) {
+        const err = await response.text();
+        console.error("❌ API Error:", err);
+        throw new Error("Failed to save attempt");
       }
 
-      router.push(`/quiz/${quizId}/result`);
+      const data = await response.json();
+      const attempt_id = data.attemptId;
+
+      router.push(`/quiz/${quizId}/result?attemptId=${attempt_id}`);
 
     } catch (error) {
       console.error('❌ Error submitting quiz:', error);
