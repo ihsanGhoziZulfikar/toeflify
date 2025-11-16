@@ -70,7 +70,7 @@ function QuizResultClientComponent() {
 
         {/* Buttons */}
         <div className="flex justify-center gap-8">
-          <button className="bg-yellow-400 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-all transform hover:-translate-y-0.5" onClick={() => router.push('/quiz/review?attemptId=' + attemptId)}>
+          <button className="bg-yellow-400 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-all transform hover:-translate-y-0.5" onClick={() => router.push('/quiz/review/' + attemptId)}>
             REVIEW EXERCISE
           </button>
           <button className="bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all transform hover:-translate-y-0.5" onClick={() => router.push('/')}>
