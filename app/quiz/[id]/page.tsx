@@ -97,6 +97,7 @@ function QuizPageContent() {
             total_questions: questions.length,
             percentage: percentage,
             answers: answersData,
+            quiz_title: quizTitle,
           }),
         });
 
