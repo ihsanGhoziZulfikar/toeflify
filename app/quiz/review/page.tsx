@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ReviewQuestion from '@/components/ReviewQuestion';
 
 interface Answer {
@@ -20,11 +20,11 @@ interface TransformedQuestion {
 
 export default function ReviewQuizPage() {
   const router = useRouter();
-  const attemptId = sessionStorage.getItem('attemptId');
-
   const [questions, setQuestions] = useState<TransformedQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const attemptId = searchParams.get("attemptId");
 
   useEffect(() => {
     if (!attemptId) {
