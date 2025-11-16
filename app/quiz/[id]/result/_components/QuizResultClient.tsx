@@ -4,8 +4,9 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import CompleteQuizImage from 'public/assets/images/completed-quiz.png';
+import { Suspense } from 'react';
 
-export default function QuizResultClient() {
+function QuizResultClientComponent() {
   const router = useRouter();
   const [score, setScore] = useState(0);
   const [percentage, setPercentage] = useState(0);
@@ -79,4 +80,12 @@ export default function QuizResultClient() {
       </div>
     </div>
   );
+}
+
+export default function QuizResultClient() {
+  return (
+    <Suspense>
+      <QuizResultClientComponent /> 
+    </Suspense>
+  )
 }

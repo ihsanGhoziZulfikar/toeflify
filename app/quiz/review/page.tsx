@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ReviewQuestion from '@/components/ReviewQuestion';
+import { Suspense } from 'react';
 
 interface Answer {
   label: string;
@@ -18,7 +19,7 @@ interface TransformedQuestion {
   explanation: string;
 }
 
-export default function ReviewQuizPage() {
+function ReviewQuizPageComponent() {
   const router = useRouter();
   const [questions, setQuestions] = useState<TransformedQuestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -125,4 +126,12 @@ export default function ReviewQuizPage() {
       </div>
     </div>
   );
+}
+
+export default function ReviewQuizPage() {
+  return (
+    <Suspense>
+      <ReviewQuizPageComponent /> 
+    </Suspense>
+  )
 }
