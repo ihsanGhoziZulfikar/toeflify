@@ -11,6 +11,7 @@ export default function QuizResultClient() {
   const [percentage, setPercentage] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
+  const attemptId = sessionStorage.getItem('attemptId');
 
   useEffect(() => {
     const reviewDataStr = sessionStorage.getItem('quizReviewData');

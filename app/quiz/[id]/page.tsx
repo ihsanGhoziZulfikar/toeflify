@@ -63,7 +63,7 @@ function QuizPageContent() {
     try {
 
       let correctCount = 0;
-      const answersData = questions.map((q, index) => {
+      const answersData = questions.map((q) => {
         const selectedOptionId = selectedOptions[q.id];
         const selectedOptionIndex = q.options.findIndex((opt: { id: string; }) => opt.id === selectedOptionId);
         const isCorrect = q.options[selectedOptionIndex]?.isCorrect || false;
@@ -101,12 +101,19 @@ function QuizPageContent() {
           }),
         });
 
+        const dataAttempt = await response.json();
+        const attemptId = dataAttempt.attemptId;
+
+        sessionStorage.setItem("attemptId", attemptId);
+
         if (!response.ok) {
           throw new Error(`❌ Failed to save attempt: ${response.statusText}`);
         }
       } catch (error) {
         console.error('❌ Failed to save attempt:', error);
       }
+
+      
 
       router.push(`/quiz/${quizId}/result`);
 
