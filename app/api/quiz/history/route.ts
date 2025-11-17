@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { buildPaginationMetadata, parsePaginationParams } from '../../paginate';
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,56 +18,34 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { searchParams } = request.nextUrl;
-    const pageParam = searchParams.get('page');
-    const sizeParam = searchParams.get('size');
+    const { page, size, from, to } = parsePaginationParams(request);
 
-    let query = supabase
+    const {
+      data: historyData,
+      error: queryError,
+      count,
+    } = await supabase
       .from('quiz_attempts')
-      .select('id, quiz_title, completed_at, score')
+      .select('id, quiz_title, completed_at, score', { count: 'exact' })
       .eq('user_id', user.id)
-      .order('completed_at', { ascending: false });
+      .order('completed_at', { ascending: false })
+      .range(from, to);
 
-    if (pageParam && sizeParam) {
-      const page = parseInt(pageParam);
-      const size = parseInt(sizeParam);
+    const pagination = buildPaginationMetadata(count ?? 0, page, size);
 
-      if (isNaN(page) || page < 1 || isNaN(size) || size < 1) {
-        return NextResponse.json(
-          { error: 'Invalid page or size parameters.' },
-          { status: 400 }
-        );
-      }
-
-      const from = (page - 1) * size;
-      const to = from + size - 1;
-
-      query = query.range(from, to);
-    }
-
-    const { data: historyData, error: queryError } = await query;
-
-    if (queryError) {
-      console.error('Quiz History Fetch Error:', queryError.message);
-
+    if (page > pagination.total_pages) {
       return NextResponse.json(
-        { error: 'Failed to fetch quiz history.' },
-        { status: 500 }
+        { error: 'Page out of range.' },
+        { status: 400 }
       );
     }
 
-    const histories = historyData.map((attempt) => ({
-      id: attempt.id,
-      title: attempt.quiz_title,
-      date: attempt.completed_at,
-      score: attempt.score,
-    }));
+    if (queryError) throw queryError;
 
     return NextResponse.json({
       message: 'Fetch quiz history data successful',
-      data: {
-        histories: histories,
-      },
+      data: { histories: historyData },
+      pagination,
     });
   } catch (e) {
     const error = e as Error;
