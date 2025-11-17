@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       message: 'Fetch quiz history data successful',
       data: { histories: historyData },
-      pagination,
+      metadata: pagination,
     });
   } catch (e) {
     const error = e as Error;
