@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { ChevronRight, BookOpen } from 'lucide-react';
 import { getSections } from '../lib/data-manager';
+import { urlFor } from '../lib/imageFallback';
 import type { SectionListing } from '../lib/types';
 
 export default async function Home() {
@@ -25,7 +26,7 @@ export default async function Home() {
                 of lessons covering all sections: Reading, Listening, Speaking, Writing, and Structure. Learn from TOEFL experts and ace your test.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 font-open-sans">
-                <button className="px-8 py-4 bg-primary font-bold text-white rounded-lg hover:bg-blue-600 transition-all transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer">
+                <button className="px-8 py-4 bg-primary font-bold text-white rounded-lg hover:bg-blue-500 transition-all transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer">
                   View Courses
                   <ChevronRight className="w-5 h-5" strokeWidth={3} />
                 </button>
@@ -33,15 +34,15 @@ export default async function Home() {
               </div>
               {/* Trust Indicators */}
               <div className="mt-12 flex items-center gap-8">
-                <div className='w-1/3'>
+                <div className="w-1/3">
                   <p className="text-3xl font-bold text-warning font-outfit">1000+</p>
                   <span className="text-black font-saira">Courses to choose from</span>
                 </div>
-                <div className='w-1/3'>
+                <div className="w-1/3">
                   <p className="text-3xl font-bold text-primary font-outfit">5000+</p>
                   <span className="text-black font-saira">Students Trained</span>
                 </div>
-                <div className='w-1/3'>
+                <div className="w-1/3">
                   <p className="text-3xl font-bold text-danger font-outfit">200+</p>
                   <span className="text-black font-saira">Professional Trainers</span>
                 </div>
@@ -70,8 +71,8 @@ export default async function Home() {
               sections.slice(0, 3).map((sec: SectionListing) => {
                 return (
                   <div key={sec._id} className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_10px_25px_rgba(0,0,0,0.06)]">
-                    <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-sm mb-6">
-                      <BookOpen className="w-6 h-6" />
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-sm mb-6 overflow-hidden">
+                      {sec.coverImage ? <Image src={urlFor(sec.coverImage)} alt={sec.name} width={48} height={48} className="w-full h-full object-cover" /> : <BookOpen className="w-6 h-6" />}
                     </div>
                     <h3 className="text-xl font-extrabold text-gray-900 leading-snug mb-3 font-rowdies">{sec.name}</h3>
                     <p className="text-gray-600 mb-6 font-saira">{sec.excerpt}</p>
@@ -89,7 +90,7 @@ export default async function Home() {
 
           {/* See More Button */}
           <div className="text-center mt-6">
-            <button className="px-10 py-2 font-semibold bg-primary text-white rounded-lg shadow cursor-pointer hover:bg-blue-600 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">
+            <button className="px-10 py-2 font-semibold bg-primary text-white rounded-lg shadow cursor-pointer hover:bg-blue-500 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">
               See More
             </button>
           </div>
@@ -106,7 +107,7 @@ export default async function Home() {
               Skills?
             </h3>
             <p className="text-gray-600 max-w-2xl mx-auto mb-6">Once you&apos;ve mastered the parts, try our full-length TOEFL ITP simulation tests to check your score.</p>
-            <button className="px-6 py-3 bg-primary text-white rounded-full shadow hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 font-semibold cursor-pointer">
+            <button className="px-6 py-3 bg-primary text-white rounded-full shadow hover:bg-blue-500 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 font-semibold cursor-pointer">
               Take a Full Practice Test
             </button>
           </div>

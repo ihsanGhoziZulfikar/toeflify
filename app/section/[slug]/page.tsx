@@ -36,12 +36,7 @@ export default async function SectionPage({ params }: PageProps) {
 
   const chapters = section.chapters;
 
-  const colorOrder = [
-    'var(--color-purple)',
-    'var(--color-danger)',
-    'var(--color-warning)',
-    'var(--color-primary)',
-  ];
+  const colorOrder = ['var(--color-purple)', 'var(--color-danger)', 'var(--color-warning)', 'var(--color-primary)'];
   // Info boxes
   const infoBoxes = [
     {
@@ -53,8 +48,7 @@ export default async function SectionPage({ params }: PageProps) {
     },
     {
       title: 'Full Simulation Test',
-      subtitle:
-        'Ready to test all your skills? Try our full-length ITP simulation.',
+      subtitle: 'Ready to test all your skills? Try our full-length ITP simulation.',
       color: 'var(--color-purple)',
       href: '/test',
       buttonText: 'Start Test',
@@ -68,44 +62,30 @@ export default async function SectionPage({ params }: PageProps) {
         <div className="flex justify-center items-center w-full bg-blue-50 p-6">
           {/* Left Image */}
           <div className="w-1/6">
-            <Image
-              src={imageSrc}
-              alt={title}
-              width={300}
-              height={200}
-              className="rounded-xl object-cover"
-            />
+            <Image src={imageSrc} alt={title} width={300} height={200} className="rounded-xl object-cover" />
           </div>
 
           {/* Right Title */}
           <div className="w-3/6 pl-6">
-            <h1 className="text-3xl font-bold text-primary font-rowdies">
-              {title}
-            </h1>
+            <h1 className="text-3xl font-bold text-primary font-rowdies">{title}</h1>
 
             <div className="flex items-center gap-4 mt-2 font-saira">
               {/* Chapters */}
               <div className="flex items-center gap-1 text-purple">
                 <Book size={20} />
-                <span className="text-md font-medium">
-                  {chaptersCount} Chapters
-                </span>
+                <span className="text-md font-medium">{chaptersCount} Chapters</span>
               </div>
 
               {/* Topics */}
               <div className="flex items-center gap-1 text-danger">
                 <ListChecks size={20} />
-                <span className="text-md font-medium">
-                  {topicsCount} Topics
-                </span>
+                <span className="text-md font-medium">{topicsCount} Topics</span>
               </div>
 
               {/* Skills */}
               <div className="flex items-center gap-1 text-warning">
                 <Star size={20} />
-                <span className="text-md font-medium">
-                  {skillsCount} Skills
-                </span>
+                <span className="text-md font-medium">{skillsCount} Skills</span>
               </div>
             </div>
           </div>
@@ -124,14 +104,7 @@ export default async function SectionPage({ params }: PageProps) {
             {chapters && chapters.length > 0 ? (
               chapters.map((chapter, index) => {
                 const color = colorOrder[index % colorOrder.length]; // Rotate colors
-                return (
-                  <ColoredStick
-                    key={chapter._key}
-                    text={chapter.name || 'Untitled Chapter'}
-                    color={color}
-                    href={`/chapter/${chapter.slug || ''}`}
-                  />
-                );
+                return <ColoredStick key={chapter._key} text={chapter.name || 'Untitled Chapter'} color={color} href={`/chapter/${chapter.slug || ''}`} />;
               })
             ) : (
               <p className="text-gray-500 italic">No chapters available.</p>
@@ -139,16 +112,9 @@ export default async function SectionPage({ params }: PageProps) {
           </div>
 
           {/* Right Side */}
-          <div className="w-1/4 flex flex-col gap-6">
+          <div className="w-1/4 flex flex-col gap-6 lg:sticky lg:top-28 self-start">
             {infoBoxes.map((box) => (
-              <InfoBox
-                key={box.title}
-                title={box.title}
-                subtitle={box.subtitle}
-                color={box.color}
-                href={box.href}
-                buttonText={box.buttonText}
-              />
+              <InfoBox key={box.title} title={box.title} subtitle={box.subtitle} color={box.color} href={box.href} buttonText={box.buttonText} />
             ))}
           </div>
         </div>
