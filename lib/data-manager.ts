@@ -1,6 +1,7 @@
 import { client } from './sanity.client';
 import * as queries from './sanity.queries';
-import type { Section, SectionListing, Skill } from './types';
+import type { Quiz, Section, SectionListing, Skill } from './types';
+import { createSupabaseServerClient } from './supabase/server';
 
 /**
  * Generic helper to fetch data from Sanity using a GROQ query.
@@ -11,10 +12,7 @@ import type { Section, SectionListing, Skill } from './types';
  * @returns parsed data from Sanity
  * @throws re-throws any error from the client after logging
  */
-export async function fetchSanity<T = unknown, P = Record<string, unknown>>(
-  query: string,
-  params?: P
-): Promise<T> {
+export async function fetchSanity<T = unknown, P = Record<string, unknown>>(query: string, params?: P): Promise<T> {
   try {
     // client.fetch has overloads that are sometimes strict about the params type
     // cast to any in the call site only to satisfy the overloads. Keep the function
@@ -24,12 +22,7 @@ export async function fetchSanity<T = unknown, P = Record<string, unknown>>(
     return res;
   } catch (error) {
     // Keep logging minimal but helpful
-    console.error(
-      'fetchSanity error — query:',
-      typeof query === 'string' ? query.split('\n')[0] : query,
-      'params:',
-      params
-    );
+    console.error('fetchSanity error — query:', typeof query === 'string' ? query.split('\n')[0] : query, 'params:', params);
     console.error(error);
     throw error;
   }
@@ -60,9 +53,7 @@ export async function getChapterBySlug(chapterSlug: string) {
     const sectionData = await getSectionBySlug(sectionSlug);
     if (!sectionData) continue;
 
-    const chapter = sectionData.chapters?.find(
-      (ch) => (ch.slug as any) === chapterSlug
-    );
+    const chapter = sectionData.chapters?.find((ch) => (ch.slug as any) === chapterSlug);
 
     if (chapter) {
       return { section: sectionData, chapter };
@@ -80,9 +71,7 @@ export async function getTopicBySlug(topicSlug: string) {
     if (!sectionData) continue;
 
     for (const chapter of sectionData.chapters ?? []) {
-      const topicGroup = chapter.topicGroups?.find(
-        (tg) => (tg.slug as any) === topicSlug
-      );
+      const topicGroup = chapter.topicGroups?.find((tg) => (tg.slug as any) === topicSlug);
 
       if (topicGroup) {
         return { section: sectionData, chapter, topicGroup };
@@ -103,9 +92,7 @@ export async function getSkillBySlug(skillSlug: string) {
 
     for (const chapter of sectionData.chapters ?? []) {
       for (const topicGroup of chapter.topicGroups ?? []) {
-        const skill = topicGroup.skills?.find(
-          (sk) => (sk.slug as any) === skillSlug
-        );
+        const skill = topicGroup.skills?.find((sk) => (sk.slug as any) === skillSlug);
 
         if (skill) {
           return { section: sectionData, chapter, topicGroup, skill };
@@ -119,6 +106,24 @@ export async function getSkillBySlug(skillSlug: string) {
 
 export async function getSectionFilters(): Promise<Section[]> {
   return fetchSanity<Section[]>(queries.getSectionFiltersQuery);
+}
+
+export async function getQuizzesBySkillName(skillName: string): Promise<Quiz[]> {
+  const formattedSkillName = skillName
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase.from('quizzes').select('*').contains('skills', [formattedSkillName]);
+  console.log('Fetched quizzes for skill:', formattedSkillName, 'Count:', data?.length);
+  if (error) {
+    console.error('Error fetching quizzes by skill name:', error);
+    return [];
+  }
+
+  return data || [];
 }
 
 // Export queries in case callers want to use them directly with fetchSanity
