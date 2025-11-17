@@ -84,3 +84,9 @@ export interface Quiz {
   created_at: string;
   total_questions: number;
 }
+
+export interface Slide {
+  image: string;
+  title: string;
+  description: string;
+}

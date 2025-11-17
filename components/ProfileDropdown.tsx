@@ -3,6 +3,8 @@
 import { User, FileText, History, LogOut, Settings } from 'lucide-react';
 import { JSX } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useUserStore } from '@/lib/store/userStore';
 
 export default function ProfileDropdown() {
@@ -19,7 +21,6 @@ export default function ProfileDropdown() {
 
       if (response.ok) {
         clearProfile();
-
         router.refresh();
       } else {
         console.error('Server failed to logout');
@@ -51,49 +52,45 @@ export default function ProfileDropdown() {
   ];
 
   return (
-    <div className="bg-white w-3xs shadow-xl p-5 rounded-xl flex flex-col gap-2 h-fit">
+    <div className="bg-white w-64 shadow-xl p-5 rounded-xl flex flex-col gap-2 h-fit">
       {/* upper */}
       <div className="text-center py-3 flex flex-col gap-1">
         {/* profile pic */}
-        <div className="w-30 h-30 rounded-full overflow-hidden flex-shrink-0 border border-gray-300 p-2 mx-auto">
-          <div className="w-full h-full rounded-full overflow-hidden">
-            <img
-              src={profile?.image_url ?? '/assets/images/profile_default.jpg'}
-              alt="Profile Picture"
-              className="w-full h-full object-cover"
-            />
+        <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-300 p-2 mx-auto">
+          <div className="w-full h-full rounded-full overflow-hidden relative">
+            <Image src={profile?.image_url ?? '/assets/images/profile_default.jpg'} alt={profile?.full_name ?? 'Profile Picture'} fill className="object-cover" />
           </div>
         </div>
 
-        <p className="text-primary font-semibold">Level {profile?.level}</p>
+        <p className="text-primary font-semibold">Level {profile?.level ?? 1}</p>
         <h2 className="text-lg font-semibold">{profile?.full_name}</h2>
 
-        <div className="rounded-lg bg-primary px-2 py-1 my-1 text-white inline-block w-fit mx-auto">
-          Score {profile?.score}
-        </div>
+        <div className="rounded-lg bg-primary px-2 py-1 my-1 text-white inline-block w-fit mx-auto">Score {profile?.score ?? 0}</div>
       </div>
 
       <hr />
 
       {/* bottom */}
       <div className="text-gray-500">
-        {PROFILE_ITEMS.map((item) => (
-          <a
-            key={item.label}
-            href={item.href}
-            onClick={item.onClick}
-            className={`flex flex-row items-start gap-2 p-2 rounded-lg cursor-pointer
-                        ${
-                          item.danger
-                            ? 'hover:bg-red-600 hover:text-white text-red-600'
-                            : 'hover:bg-gray-300'
-                        }
-                        `}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </a>
-        ))}
+        {PROFILE_ITEMS.map((item) => {
+          const itemClasses = `flex flex-row items-start gap-2 p-2 rounded-lg cursor-pointer w-full text-left ${item.danger ? 'hover:bg-red-600 hover:text-white text-red-600' : 'hover:bg-gray-300'}`;
+
+          if (item.href) {
+            return (
+              <Link key={item.label} href={item.href} className={itemClasses}>
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            );
+          }
+
+          return (
+            <button key={item.label} type="button" onClick={item.onClick} className={itemClasses}>
+              {item.icon}
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
