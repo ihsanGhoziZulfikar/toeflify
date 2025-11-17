@@ -75,3 +75,12 @@ export interface SectionListing {
   excerpt?: string;
   description: PortableTextBlock[];
 }
+
+export interface Quiz {
+  id: number;
+  title: string;
+  skills: string[];
+  user_id: string;
+  created_at: string;
+  total_questions: number;
+}
