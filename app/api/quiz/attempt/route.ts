@@ -20,7 +20,8 @@ export async function POST(request: Request) {
       percentage,
       time_spent = 0,
       answers = [],
-      quiz_title
+      quiz_title,
+      quiz_difficulty,
     } = await request.json();
 
     // Validasi input
@@ -42,7 +43,8 @@ export async function POST(request: Request) {
           total_questions,
           percentage,
           time_spent,
-          quiz_title
+          quiz_title,
+          quiz_difficulty,
         },
       ])
       .select()

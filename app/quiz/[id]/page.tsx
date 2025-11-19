@@ -11,6 +11,7 @@ function QuizPageContent() {
 
   const [questions, setQuestions] = useState<any[]>([]);
   const [quizTitle, setQuizTitle] = useState('Loading Quiz...');
+  const [quizDifficulty, setQuizDifficulty] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +44,8 @@ function QuizPageContent() {
         }));
 
         setQuestions(transformedQuestions);
-        setQuizTitle(`${quizData.topics} - ${quizData.difficulty.charAt(0).toUpperCase() + quizData.difficulty.slice(1)} Level`);
+        setQuizTitle(quizData.topics);
+        setQuizDifficulty(quizData.difficulty);
       } catch (err) {
         console.error('❌ Failed to load quiz:', err);
         setError('Failed to load quiz. Please try again.');
@@ -97,6 +99,7 @@ function QuizPageContent() {
           percentage,
           answers: answersData,
           quiz_title: quizTitle,
+          quiz_difficulty: quizDifficulty,
         }),
       });
 

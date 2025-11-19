@@ -1,9 +1,10 @@
 // app/api/generate-exercise/route.ts
 
-import { streamObject } from 'ai';
+import { generateObject } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY,
@@ -18,7 +19,6 @@ const quizSchema = z.object({
       explanation: z.string().optional().describe('A brief explanation for why the answer is correct.'),
     })
   ),
-  // metadata: z.object({ ... })
 });
 
 interface ExercisePayload {
@@ -35,7 +35,22 @@ interface ExercisePayload {
 
 export async function POST(req: Request) {
   try {
+    const supabase = createSupabaseServerClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { skills, topics, difficulty, number, toggles, additional }: ExercisePayload = await req.json();
+
+    if (!topics) {
+      return NextResponse.json({ error: 'Topics are required' }, { status: 400 });
+    }
 
     const systemPrompt = `You are an expert quiz generator, specialized in English language learning (like TOEFL or general grammar).
 Generate a quiz based *exactly* on the user's specifications.
@@ -53,16 +68,62 @@ ${toggles.explanation ? 'You MUST provide a brief explanation for each answer.' 
     - Additional Instructions: ${additional || 'None'}
     `;
 
-    const result = streamObject({
+    const { object: generatedQuiz } = await generateObject({
       model: groq('openai/gpt-oss-20b'),
       schema: quizSchema,
       system: systemPrompt,
       prompt: userPrompt,
-      //   maxOutputTokens: 1500,
       temperature: 0.5,
     });
 
-    return result.toTextStreamResponse();
+    const { data: quiz, error: quizError } = await supabase
+      .from('quizzes')
+      .insert([
+        {
+          user_id: user.id,
+          title: `Custom Exercise: ${topics || 'Untitled'}`,
+          topics: topics,
+          difficulty: difficulty || 'medium',
+          skills: skills,
+          total_questions: generatedQuiz.questions.length,
+        },
+      ])
+      .select()
+      .single();
+
+    if (quizError) throw quizError;
+
+    const questionsToInsert = generatedQuiz.questions.map((q: { questionText: string; correctAnswerIndex: number; explanation?: string }, index: number) => ({
+      quiz_id: quiz.id,
+      question_text: q.questionText,
+      question_order: index + 1,
+      correct_answer_index: q.correctAnswerIndex,
+      explanation: toggles.explanation ? q.explanation : null,
+    }));
+
+    const { data: insertedQuestions, error: questionsError } = await supabase
+      .from('questions')
+      .insert(questionsToInsert)
+      .select();
+
+    if (questionsError) throw questionsError;
+
+    const optionsToInsert = insertedQuestions.flatMap((question: { id: number }, qIndex: number) => {
+      return generatedQuiz.questions[qIndex].options.map((optionText: string, optIndex: number) => ({
+        question_id: question.id,
+        option_text: optionText,
+        option_order: optIndex,
+      }));
+    });
+
+    const { error: optionsError } = await supabase.from('question_options').insert(optionsToInsert);
+
+    if (optionsError) throw optionsError;
+
+    return NextResponse.json({
+      success: true,
+      quizId: quiz.id,
+    });
   } catch (error) {
     console.error('[API Generate Error]', error);
 
