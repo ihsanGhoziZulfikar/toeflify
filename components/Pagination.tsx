@@ -18,7 +18,7 @@ export default function Pagination({
 }: PaginationProps) {
     const renderPageNumbers = () => {
     const pages = [];
-    const MAX_VISIBLE = 5;
+    const MAX_VISIBLE = 7;
 
     if (totalPages <= MAX_VISIBLE) {
       // Show all pages if total is small
@@ -29,25 +29,27 @@ export default function Pagination({
       // Show first page
       pages.push(1);
 
-      if (page > 3) {
-        pages.push('...');
-      }
-
-      // Show pages around current
-      for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
-        if (!pages.includes(i)) {
+      if (page < 5) {
+        for (let i=2;i<=5;i++){
           pages.push(i);
         }
-      }
-
-      if (page < totalPages - 2) {
+        pages.push('...');
+      }else if (page > totalPages - 4) {
+        pages.push('...');
+        for(let i=Math.min(totalPages-4, page);i<totalPages;i++){
+          pages.push(i);
+        }
+      } else {
+        pages.push('...');
+        for (let i = page - 1; i <=  page + 1; i++) {
+          if (!pages.includes(i)) {
+            pages.push(i);
+          }
+        }
         pages.push('...');
       }
-
       // Show last page
-      if (!pages.includes(totalPages)) {
-        pages.push(totalPages);
-      }
+      pages.push(totalPages);
     }
 
     return pages;
