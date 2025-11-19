@@ -35,7 +35,6 @@ export default function CustomExercisePage({ skillNames }: CustomExerciseProps) 
     };
 
     try {
-
       const response = await fetch('/api/generate-exercise', {
         method: 'POST',
         headers: {
@@ -48,50 +47,13 @@ export default function CustomExercisePage({ skillNames }: CustomExerciseProps) 
         throw new Error(`API error: ${response.statusText}`);
       }
 
-      if (!response.body) {
-        throw new Error('API response has no body');
+      const result = await response.json();
+
+      if (!result.success || !result.quizId) {
+        throw new Error('Failed to generate and save exercise');
       }
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let fullResponse = '';
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        fullResponse += decoder.decode(value, { stream: true });
-      }
-
-      const generatedQuiz = JSON.parse(fullResponse);
-
-      const quizToSave = {
-        topics: topics,
-        title: `Custom Exercise: ${topics || 'Untitled'}`,
-        difficulty: difficulty || 'medium',
-        skills: skills,
-        questions: generatedQuiz.questions.map((q: any) => ({
-          questionText: q.questionText,
-          options: q.options,
-          correctAnswerIndex: q.correctAnswerIndex,
-          explanation: toggles.explanation ? q.explanation : undefined
-        }))
-      };
-
-      const saveResponse = await fetch('/api/quiz', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(quizToSave),
-      });
-
-      if (!saveResponse.ok) {
-        throw new Error(`Save API error: ${saveResponse.statusText}`);
-      }
-
-      const saveResult = await saveResponse.json();
-
-      router.push(`/quiz/${saveResult.quizId}`);
+      router.push(`/quiz/${result.quizId}`);
 
     } catch (error) {
       console.error('❌ Error generating/saving exercise:', error);
