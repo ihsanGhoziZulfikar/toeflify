@@ -13,14 +13,16 @@ interface PracticeCardProps{
     estTime: string,
     score: number,
     maxScore: number,
-    attempted: boolean
+    attempted: boolean,
+    onStart: () => void,
+    onReview: () => void,
 }
 
 export default function PracticeCard({ id, title, section, number, difficulity, estTime, score, maxScore, attempted }: PracticeCardProps){
     return (
         <div
             key={id}
-            className="flex flex-row justify-start rounded-sm shadow-md border border-gray-100 items-center cursor-pointer hover:bg-gray-100 px-5 py-2 m-2 gap-3"
+            className="flex flex-row w-full max-w-5xl justify-start rounded-sm shadow-md border border-gray-100 items-center cursor-pointer hover:bg-gray-100 px-5 py-2 my-2 gap-3"
         >
             <div className="rounded-lg bg-purple-200 p-3">
             <BookOpen color="#9747FF" />

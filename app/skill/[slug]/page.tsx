@@ -1,18 +1,14 @@
 import { getQuizzesBySkillName, getSkillBySlug } from '@/lib/data-manager';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { urlFor } from '@/lib/imageFallback';
 import { PortableText } from 'next-sanity';
 import { PortableTextBlock } from '@sanity/types';
 import { CustomTable, Quiz } from '@/lib/types';
 import BreadcrumbLayout from '@/components/BreadcrumbLayout';
 import Link from 'next/link';
+import SkillHeader from '@/components/SkillHeader';
 
-interface SkillHeaderProps {
-  title: string;
-  description: string;
-  imageSrc: string;
-}
+
 
 interface ContentSectionProps {
   title: string;
@@ -35,22 +31,7 @@ interface SkillPageProps {
   };
 }
 
-function SkillHeader({ title, description, imageSrc }: SkillHeaderProps) {
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div className="flex items-start space-x-4">
-        <div className="w-20 h-20 bg-gray-800 rounded-lg shrink-0 overflow-hidden">
-          {imageSrc ? <Image src={imageSrc} alt={title} width={355} height={171} className="object-cover" /> : <div className="w-full h-full flex items-center justify-center text-white text-2xl">📖</div>}
-        </div>
 
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{title}</h1>
-          <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function ContentSection({ content }: ContentSectionProps) {
   return (
@@ -127,14 +108,14 @@ export default async function SkillPage({ params }: SkillPageProps) {
   return (
     <BreadcrumbLayout type="skill" slug={skillSlug}>
       <div className="min-h-screen bg-gray-50">
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <SkillHeader title={skillData.name} description={skillData.description} imageSrc={urlFor(skillData.image)} />
 
           <ContentSection title={skillData.name} content={skillData.content} />
 
           <ExerciseSection title="Exercise" instruction="Complete the following exercises:" items={skillData.exercise} />
 
-          <QuizListSection quizzes={quizzes} />
+          {/* <QuizListSection quizzes={quizzes} /> */}
         </main>
       </div>
     </BreadcrumbLayout>

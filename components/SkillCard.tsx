@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
+import { isEmpty, toTitleCase } from '@/lib/helper';
 
 interface SkillCardProps {
   title: string;
@@ -17,11 +18,11 @@ export default function SkillCard({
   exerciseHref = '#',
 }: SkillCardProps) {
   return (
-    <div className="max-w-7xl mx-auto bg-white rounded-[10px] p-6 shadow-[0_6px_16px_rgba(0,0,0,0.2)] transition-shadow hover:shadow-2xl">
+    <div className="max-w-5xl w-full mx-auto bg-white rounded-[10px] p-6 shadow-[0_6px_16px_rgba(0,0,0,0.2)] transition-shadow hover:shadow-2xl">
       <div className="grid grid-cols-1 md:grid-cols-[1.7fr_1.3fr] gap-6 items-start">
         <div className="order-2 md:order-0">
-          <h2 className="text-lg font-saira font-semibold mb-2">{title}</h2>
-          <p className="text-gray-700 font-saira mb-4">{description}</p>
+          <h2 className="text-lg font-saira font-semibold mb-2">{toTitleCase(title)}</h2>
+          <p className="text-gray-700 font-saira mb-4">{isEmpty(description)? "No Description" : description }</p>
 
           <div className="flex gap-5">
             <a
@@ -41,15 +42,17 @@ export default function SkillCard({
           </div>
         </div>
 
-        <div className="order-1 md:order-0 flex md:justify-end justify-center self-start w-full md:w-auto">
-          <Image
-            src={imageSrc}
-            alt={title}
-            width={355}
-            height={171}
-            className="w-full md:w-[355px] sm:h-[181px] h-auto rounded-lg object-contain"
-            priority
-          />
+        <div className="order-1 md:order-0 md:justify-end justify-center flex">
+          <div className="w-[200px] h-[120px] flex-shrink-0 overflow-hidden rounded-lg">
+            <Image
+              src={imageSrc}
+              alt={title}
+              width={200}
+              height={120}
+              className="object-contain w-full h-full"
+              priority
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -94,7 +94,7 @@ export default async function SectionPage({ params }: PageProps) {
         {/* Bottom Section */}
         <div className="max-w-5xl bg-white rounded-2xl mt-6 p-6 flex gap-8 font-saira">
           {/* Left Side */}
-          <div className="w-3/4">
+          <div className="w-full">
             {/* <p className="text-gray-700 leading-relaxed pb-5">{description}</p> */}
             <div className="prose prose-gray max-w-none pb-5">
               <PortableTextBlock value={description} />
@@ -112,7 +112,7 @@ export default async function SectionPage({ params }: PageProps) {
           </div>
 
           {/* Right Side */}
-          <div className="w-1/4 flex flex-col gap-6 lg:sticky lg:top-28 self-start">
+          <div className="flex flex-col gap-6 lg:sticky lg:top-30 self-start">
             {infoBoxes.map((box) => (
               <InfoBox key={box.title} title={box.title} subtitle={box.subtitle} color={box.color} href={box.href} buttonText={box.buttonText} />
             ))}
