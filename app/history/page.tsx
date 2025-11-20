@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import ProfileDropdown from "@/components/ProfileDropdown";
-import { useRouter } from "next/navigation";
-import SkeletonList from "@/components/ui/SkeletonList";
-import Pagination from "@/components/Pagination";
-import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher";
-import { useState } from "react";
+import ProfileDropdown from '@/components/ProfileDropdown';
+import { useRouter } from 'next/navigation';
+import SkeletonList from '@/components/ui/SkeletonList';
+import Pagination from '@/components/Pagination';
+import useSWR from 'swr';
+import { fetcher } from '@/lib/fetcher';
+import { useState } from 'react';
 
 type HistoryItem = {
   id: string;
@@ -47,10 +47,10 @@ export default function HistoryPage() {
   const metadata: Metadata | null = data?.metadata || null;
 
   function formatDate(dateString: string) {
-    return new Date(dateString).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
+    return new Date(dateString).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
     });
   }
 
@@ -71,7 +71,6 @@ export default function HistoryPage() {
 
           {/* History List */}
           <div className="w-full max-w-4xl bg-white flex flex-col min-h-[500px] p-2">
-
             {/* Header row */}
             <div className="flex items-center justify-between text-xl mb-4">
               <h2 className="font-saira font-semibold">Task</h2>
@@ -90,13 +89,17 @@ export default function HistoryPage() {
                     className="flex items-center justify-between border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-100 p-3 pr-5"
                   >
                     <div>
-                      <h2 className="font-saira text-gray-800">{item.quiz_title}</h2>
-                      <p className="text-sm text-gray-500">{formatDate(item.completed_at)}</p>
+                      <h2 className="font-saira text-gray-800">
+                        {item.quiz_title}
+                      </h2>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(item.completed_at)}
+                      </p>
                     </div>
                     <div className="text-right">
                       <span
                         className={`text-lg ${
-                          item.score > 0 ? "text-green-700" : "text-red-700"
+                          item.score > 0 ? 'text-green-700' : 'text-red-700'
                         }`}
                       >
                         {item.score}

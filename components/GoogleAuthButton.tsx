@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useSearchParams } from 'next/navigation';
 
 export default function GoogleAuthButton() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const searchParams = useSearchParams();
 
   const handleLoginWithGoogle = async () => {
     setLoading(true);
@@ -13,10 +15,13 @@ export default function GoogleAuthButton() {
 
     const supabase = createSupabaseBrowserClient();
 
+    const next = searchParams.get('next') || '/';
+    const redirectTo = `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(next)}`;
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
+        redirectTo: redirectTo,
       },
     });
 
