@@ -1,72 +1,59 @@
-import { getSectionFilters } from '@/lib/data-manager';
+import { getLessonSkills, getSectionFilters } from '@/lib/data-manager';
+import { urlFor } from '@/lib/imageFallback';
 import LessonClient from './LessonClient';
 
-// Dummy lesson data - replace with real data from your backend
-const generateDummyLessons = () => {
-  const lessons = [];
-  const sections = ['Writing Expression', 'Reading Comprehension', 'Listening Skills'];
+const ITEMS_PER_PAGE = 12;
 
-  for (let i = 1; i <= 68; i++) {
-    lessons.push({
-      id: `lesson-${i}`,
-      title: 'listing skills',
-      section: sections[i % sections.length],
-      imageSrc: '/assets/images/lessons.png',
-      href: `/lesson/${i}`, // Replace with actual lesson route
-    });
-  }
-
-  return lessons;
-};
-
-export default async function LessonsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  // Get filter data
+export default async function LessonsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const params = await searchParams;
   const filterData = await getSectionFilters();
 
-  // Get all lessons
-  const allLessons = generateDummyLessons();
+  const sectionFilter = typeof params.section === 'string' ? params.section : undefined;
+  const chapterFilter = typeof params.chapter === 'string' ? params.chapter : undefined;
+  const topicFilter = typeof params.topic === 'string' ? params.topic : undefined;
+  const query = typeof params.q === 'string' ? params.q : undefined;
+  const pageParam = typeof params.page === 'string' ? Number.parseInt(params.page, 10) : 1;
+  const page = Number.isNaN(pageParam) || pageParam <= 0 ? 1 : pageParam;
 
-  // Await searchParams
-  const params = await searchParams;
+  const { items, pagination } = await getLessonSkills({
+    section: sectionFilter,
+    chapter: chapterFilter,
+    topic: topicFilter,
+    search: query,
+    page,
+    pageSize: ITEMS_PER_PAGE,
+  });
 
-  // Get filter values
-  const sectionFilter = params.section as string | undefined;
-  const chapterFilter = params.chapter as string | undefined;
-  const topicFilter = params.topic as string | undefined;
-  const pageParam = params.page as string | undefined;
-
-  // Filter lessons based on section (you'll need to implement proper filtering based on your data structure)
-  let filteredLessons = allLessons;
-
-  if (sectionFilter) {
-    // Filter by section - this is a dummy implementation
-    // Replace with actual filtering logic based on your data
-    filteredLessons = allLessons.filter(lesson =>
-      lesson.section.toLowerCase().includes(sectionFilter.toLowerCase())
-    );
-  }
-
-  // Pagination
-  const ITEMS_PER_PAGE = 9;
-  const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
-  const totalPages = Math.ceil(filteredLessons.length / ITEMS_PER_PAGE);
-
-  // Get lessons for current page
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedLessons = filteredLessons.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const lessons = items.map((lesson) => ({
+    id: lesson.id,
+    title: lesson.title,
+    section: lesson.section.name,
+    sectionSlug: lesson.section.slug,
+    chapter: lesson.chapter?.name,
+    chapterSlug: lesson.chapter?.slug,
+    topic: lesson.topic?.name,
+    topicSlug: lesson.topic?.slug,
+    href: `/skill/${lesson.slug}`,
+    imageSrc: lesson.coverImage ? urlFor(lesson.coverImage) : undefined,
+  }));
 
   return (
-    <div>
-      <LessonClient
-        filterData={filterData}
-        lessons={paginatedLessons}
-        currentPage={currentPage}
-        totalPages={totalPages}
-      />
-    </div>
+    <LessonClient
+      key={query ?? ''}
+      filterData={filterData}
+      lessons={lessons}
+      pagination={{
+        currentPage: pagination.currentPage,
+        totalPages: pagination.totalPages,
+        totalItems: pagination.totalItems,
+        pageSize: pagination.pageSize,
+      }}
+      activeFilters={{
+        section: sectionFilter,
+        chapter: chapterFilter,
+        topic: topicFilter,
+        query,
+      }}
+    />
   );
 }

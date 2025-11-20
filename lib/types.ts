@@ -27,6 +27,26 @@ export interface Skill {
   exercise: (PortableTextBlock | CustomTable)[]; // Bisa berisi block atau tabel kustom
 }
 
+export interface LessonSkillListItem {
+  id: string;
+  title: string;
+  slug: string;
+  section: {
+    name: string;
+    slug: string;
+  };
+  chapter?: {
+    name?: string;
+    slug?: string;
+  };
+  topic?: {
+    name?: string;
+    slug?: string;
+  };
+  coverImage?: Image;
+  description?: string;
+}
+
 // Berdasarkan schemaTypes/objects/topicGroup.js
 export interface TopicGroup {
   _key: string;

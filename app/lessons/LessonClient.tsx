@@ -2,214 +2,209 @@
 
 import FilterSidebar from '@/components/FilterSidebar';
 import LessonCard from '@/components/LessonCard';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Pagination from '@/components/Pagination';
+import type { Section } from '@/lib/types';
+import { Sparkles } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useMemo, useState } from 'react';
 
 interface Lesson {
   id: string;
   title: string;
   section: string;
-  imageSrc: string;
+  sectionSlug: string;
+  chapter?: string;
+  chapterSlug?: string;
+  topic?: string;
+  topicSlug?: string;
   href: string;
+  imageSrc?: string;
 }
 
-type Metadata = {
-  total: number;
-  page: number;
-  size: number;
-  total_pages: number;
-  has_next: boolean;
-  has_prev: boolean;
-};
-
-// interface PaginationProps {
-//   currentPage: number;
-//   totalPages: number;
-//   onPageChange: (page: number) => void;
-// }
-
-// function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
-//   const renderPageNumbers = () => {
-//     const pages = [];
-//     const maxVisible = 5;
-
-//     if (totalPages <= maxVisible) {
-//       // Show all pages if total is small
-//       for (let i = 1; i <= totalPages; i++) {
-//         pages.push(i);
-//       }
-//     } else {
-//       // Show first page
-//       pages.push(1);
-
-//       if (currentPage > 3) {
-//         pages.push('...');
-//       }
-
-//       // Show pages around current
-//       for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-//         if (!pages.includes(i)) {
-//           pages.push(i);
-//         }
-//       }
-
-//       if (currentPage < totalPages - 2) {
-//         pages.push('...');
-//       }
-
-//       // Show last page
-//       if (!pages.includes(totalPages)) {
-//         pages.push(totalPages);
-//       }
-//     }
-
-//     return pages;
-//   };
-
-//   return (
-//     <div className="flex items-center justify-center gap-2 mt-8 mb-4">
-//       {/* Previous Button */}
-//       <button
-//         onClick={() => onPageChange(currentPage - 1)}
-//         disabled={currentPage === 1}
-//         className={`p-2 rounded-md transition-colors ${
-//           currentPage === 1
-//             ? 'text-gray-300 cursor-not-allowed'
-//             : 'text-gray-600 hover:bg-gray-100'
-//         }`}
-//       >
-//         <ChevronLeft size={20} />
-//       </button>
-
-//       {/* Page Numbers */}
-//       {renderPageNumbers().map((page, index) => (
-//         <button
-//           key={index}
-//           onClick={() => typeof page === 'number' && onPageChange(page)}
-//           disabled={page === '...'}
-//           className={`min-w-[40px] h-[40px] rounded-md transition-colors ${
-//             page === currentPage
-//               ? 'bg-gray-900 text-white font-semibold'
-//               : page === '...'
-//               ? 'text-gray-400 cursor-default'
-//               : 'text-gray-600 hover:bg-gray-100'
-//           }`}
-//         >
-//           {page}
-//         </button>
-//       ))}
-
-//       {/* Next Button */}
-//       <button
-//         onClick={() => onPageChange(currentPage + 1)}
-//         disabled={currentPage === totalPages}
-//         className={`p-2 rounded-md transition-colors ${
-//           currentPage === totalPages
-//             ? 'text-gray-300 cursor-not-allowed'
-//             : 'text-gray-600 hover:bg-gray-100'
-//         }`}
-//       >
-//         <ChevronRight size={20} />
-//       </button>
-//     </div>
-//   );
-// }
-
-export default function LessonClient({
-  filterData,
-  lessons,
-  currentPage,
-  totalPages
-}: {
-  filterData: any;
+interface LessonClientProps {
+  filterData: Section[];
   lessons: Lesson[];
-  currentPage: number;
-  totalPages: number;
-}) {
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    pageSize: number;
+  };
+  activeFilters: {
+    section?: string;
+    chapter?: string;
+    topic?: string;
+    query?: string;
+  };
+}
+
+const FALLBACK_IMAGE = '/assets/images/lessons.png';
+
+export default function LessonClient({ filterData, lessons, pagination, activeFilters }: LessonClientProps) {
   const router = useRouter();
   const params = useSearchParams();
+  const [searchValue, setSearchValue] = useState(() => activeFilters.query ?? '');
 
-  // Handle filter changes
-  const handleFilterChange = (key: string, value: string) => {
-    const newParams = new URLSearchParams(params.toString());
+  const buildUrl = useCallback((nextParams: URLSearchParams) => {
+    const queryString = nextParams.toString();
+    return queryString ? `/lessons?${queryString}` : '/lessons';
+  }, []);
 
-    if (value) newParams.set(key, value);
-    else newParams.delete(key);
+  const handleFilterChange = useCallback(
+    (key: string, value: string) => {
+      const newParams = new URLSearchParams(params.toString());
+      if (value) newParams.set(key, value);
+      else newParams.delete(key);
 
-    // Reset dependent filters and page
-    if (key === 'section') {
-      newParams.delete('chapter');
-      newParams.delete('topic');
-    } else if (key === 'chapter') {
-      newParams.delete('topic');
+      if (key === 'section') {
+        newParams.delete('chapter');
+        newParams.delete('topic');
+      } else if (key === 'chapter') {
+        newParams.delete('topic');
+      }
+
+      newParams.delete('page');
+      router.push(buildUrl(newParams));
+    },
+    [buildUrl, params, router]
+  );
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      const newParams = new URLSearchParams(params.toString());
+      newParams.set('page', page.toString());
+      router.push(buildUrl(newParams));
+    },
+    [buildUrl, params, router]
+  );
+
+  const handleSearch = useCallback(
+    (value: string) => {
+      const newParams = new URLSearchParams(params.toString());
+      if (value) newParams.set('q', value);
+      else newParams.delete('q');
+      newParams.delete('page');
+      router.push(buildUrl(newParams));
+    },
+    [buildUrl, params, router]
+  );
+
+  const resultsRange = useMemo(() => {
+    if (!pagination.totalItems) {
+      return { start: 0, end: 0 };
     }
+    const start = (pagination.currentPage - 1) * pagination.pageSize + 1;
+    const end = Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems);
+    return { start, end };
+  }, [pagination.currentPage, pagination.pageSize, pagination.totalItems]);
 
-    // Reset to page 1 when filters change
-    newParams.delete('page');
+  const hasActiveFilters = useMemo(() => Boolean(activeFilters.section || activeFilters.chapter || activeFilters.topic || activeFilters.query), [activeFilters.chapter, activeFilters.query, activeFilters.section, activeFilters.topic]);
 
-    router.push(`/lessons?${newParams.toString()}`);
-  };
-
-  // Handle page change
-  const handlePageChange = (page: number) => {
-    const newParams = new URLSearchParams(params.toString());
-    newParams.set('page', page.toString());
-    router.push(`/lessons?${newParams.toString()}`);
-  };
-
-  const metadata: Metadata = {
-      total: 20,
-      page: 1,
-      size: 5,
-      total_pages: 4,
-      has_next: true,
-      has_prev: false,
-  }
+  const clearAllFilters = () => router.push('/lessons');
 
   return (
-    <div className="min-h-screen flex">
-      {/* Sidebar Filters */}
-      <div className="m-5">
-        <FilterSidebar filterData={filterData} onFilterChange={handleFilterChange} />
-      </div>
+    <div className="min-h-screen bg-linear-to-b from-blue-50/60 via-white to-white py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <section className="rounded-3xl bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)] border border-blue-100 p-6 md:p-10 flex flex-col lg:flex-row gap-8">
+          <div className="flex-1">
+            <div className="inline-flex items-center gap-2 text-primary text-sm font-semibold uppercase tracking-wide mb-4">
+              <Sparkles size={18} />
+              curated skills
+            </div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 font-rowdies leading-tight mb-4">Explore every TOEFL skill in one place</h1>
+            <p className="text-gray-600 text-base md:text-lg font-saira">Browse structured lessons grouped by Section → Chapter → Topic. Use the filters and search to quickly find the exact skill you need to master next.</p>
+          </div>
+          <form
+            className="bg-blue-50/60 rounded-2xl p-6 w-full lg:w-96 shadow-inner border border-blue-100 flex flex-col gap-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleSearch(searchValue.trim());
+            }}
+          >
+            <label htmlFor="lesson-search" className="text-xs font-semibold uppercase text-blue-600 tracking-widest">
+              Search skills
+            </label>
+            <input
+              id="lesson-search"
+              type="text"
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+              placeholder='Try "Listening - Short Talks"'
+              className="w-full rounded-xl border border-blue-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <div className="flex gap-3">
+              <button type="submit" className="flex-1 bg-primary text-white rounded-xl py-3 font-semibold shadow hover:bg-blue-500 transition-all cursor-pointer">
+                Search
+              </button>
+              {searchValue && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchValue('');
+                    handleSearch('');
+                  }}
+                  className="px-4 py-3 rounded-xl border border-blue-200 text-sm font-semibold text-gray-600 hover:text-primary transition-colors"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            {hasActiveFilters && (
+              <button type="button" className="text-xs text-blue-600 mt-2 underline" onClick={clearAllFilters}>
+                Reset filters
+              </button>
+            )}
+          </form>
+        </section>
 
-      {/* Main Content */}
-      <div className="flex-1 p-5 pr-10">
-        {lessons.length > 0 ? (
-          <>
-            {/* Grid of Lesson Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {lessons.map((lesson) => (
-                <LessonCard
-                  key={lesson.id}
-                  title={lesson.title}
-                  section={lesson.section}
-                  imageSrc={lesson.imageSrc}
-                  href={lesson.href}
-                />
-              ))}
+        <div className="flex flex-col lg:flex-row gap-8">
+          <aside className="w-full lg:w-80 shrink-0">
+            <FilterSidebar
+              filterData={filterData}
+              onFilterChange={handleFilterChange}
+              selectedFilters={{
+                section: activeFilters.section ?? null,
+                chapter: activeFilters.chapter ?? null,
+                topic: activeFilters.topic ?? null,
+              }}
+            />
+            {hasActiveFilters && (
+              <button type="button" onClick={clearAllFilters} className="mt-4 w-full text-sm font-semibold text-primary hover:text-blue-600 transition-colors">
+                Clear all filters
+              </button>
+            )}
+          </aside>
+
+          <main className="flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Results</p>
+                <p className="text-lg font-bold text-gray-900">
+                  Showing {resultsRange.start}-{resultsRange.end} of {pagination.totalItems} skills
+                </p>
+              </div>
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              // <Pagination
-              //   currentPage={currentPage}
-              //   totalPages={totalPages}
-              //   onPageChange={handlePageChange}
-              // />
-              <Pagination
-                page={metadata.page}
-                totalPages={metadata.total_pages}
-                hasNext={metadata.has_next}
-                hasPrev={metadata.has_prev}
-                onPageChange={()=>{}}
-              />
+            {lessons.length ? (
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {lessons.map((lesson) => (
+                    <LessonCard key={lesson.id} title={lesson.title} section={lesson.section} chapter={lesson.chapter} topic={lesson.topic} href={lesson.href} imageSrc={lesson.imageSrc ?? FALLBACK_IMAGE} />
+                  ))}
+                </div>
+
+                {pagination.totalPages > 1 && (
+                  <Pagination page={pagination.currentPage} totalPages={pagination.totalPages} hasNext={pagination.currentPage < pagination.totalPages} hasPrev={pagination.currentPage > 1} onPageChange={handlePageChange} />
+                )}
+              </div>
+            ) : (
+              <div className="rounded-3xl border border-dashed border-blue-200 bg-blue-50/40 p-12 text-center text-gray-500">
+                <p className="text-lg font-semibold text-gray-700 mb-2">No skills match your filters yet.</p>
+                <p className="text-sm text-gray-500">Try adjusting the filters or search for a different keyword.</p>
+              </div>
             )}
-          </>
-        ) : (
-          <div className="text-gray-500 text-center mt-10">No lessons found.</div>
-        )}
+          </main>
+        </div>
       </div>
     </div>
   );
