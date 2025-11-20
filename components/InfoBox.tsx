@@ -17,7 +17,7 @@ export default function InfoBox({
 }: InfoBoxProps) {
   return (
     <div
-      className="p-4 rounded-lg shadow transition hover:shadow-lg"
+      className="p-4 rounded-lg shadow transition hover:shadow-lg w-full max-w-3xs"
       style={{ backgroundColor: color }}
     >
       <h3 className="text-lg font-semibold text-white">{title}</h3>

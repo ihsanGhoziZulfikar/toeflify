@@ -28,13 +28,13 @@ export default function PracticeClient({ filterData, practices }: { filterData: 
     };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex justify-center">
       {/* Sidebar Filters */}
       <div className="m-5">
         <FilterSidebar filterData={filterData} onFilterChange={handleFilterChange} />
       </div>
       
-      <div className="w-full w-max-5xl p-5 pr-10">
+      <div className="w-full max-w-5xl p-5 pr-10">
         {practices.length > 0 ? (
           practices.map((item) => (
             <PracticeCard
@@ -48,6 +48,8 @@ export default function PracticeClient({ filterData, practices }: { filterData: 
               score = {item.score}
               maxScore = {item.maxScore}
               attempted = {item.attempted}
+              onStart = {()=>{}}
+              onReview = {()=>{}}
             />
           ))
         ) : (

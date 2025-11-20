@@ -31,7 +31,7 @@ export default function HistoryPage() {
 
   // SWR fetch with cache per page
   const { data, error, isLoading } = useSWR(
-    `/api/quiz/history?size=1&page=${page}`,
+    `/api/quiz/history?size=5&page=${page}`,
     fetcher,
     {
       // revalidateOnMount: false,

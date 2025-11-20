@@ -11,6 +11,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
+import { toTitleCase } from '@/lib/helper';
 
 export type BreadcrumbItemType = {
   label: string;
@@ -38,7 +39,7 @@ export default function CustomBreadcrumb({
                 <BreadcrumbItem>
                   {i === last ? (
                     <BreadcrumbPage className="text-primary-foreground">
-                      {it.label}
+                      {toTitleCase(it.label)}
                     </BreadcrumbPage>
                   ) : (
                     <BreadcrumbLink asChild>
@@ -46,7 +47,7 @@ export default function CustomBreadcrumb({
                         href={it.href}
                         className="hover:underline hover:text-white"
                       >
-                        {it.label}
+                        {toTitleCase(it.label)}
                       </Link>
                     </BreadcrumbLink>
                   )}
