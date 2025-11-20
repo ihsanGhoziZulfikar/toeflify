@@ -1,7 +1,13 @@
+import type { Image, Slug } from '@sanity/types';
 import { client } from './sanity.client';
 import * as queries from './sanity.queries';
-import type { Quiz, Section, SectionListing, Skill } from './types';
+import type { LessonSkillListItem, Quiz, Section, SectionListing, Skill } from './types';
 import { createSupabaseServerClient } from './supabase/server';
+
+const slugToString = (slug?: Slug | string | null) => {
+  if (!slug) return undefined;
+  return typeof slug === 'string' ? slug : (slug.current ?? undefined);
+};
 
 /**
  * Generic helper to fetch data from Sanity using a GROQ query.
@@ -53,7 +59,7 @@ export async function getChapterBySlug(chapterSlug: string) {
     const sectionData = await getSectionBySlug(sectionSlug);
     if (!sectionData) continue;
 
-    const chapter = sectionData.chapters?.find((ch) => (ch.slug as any) === chapterSlug);
+    const chapter = sectionData.chapters?.find((ch) => slugToString(ch.slug) === chapterSlug);
 
     if (chapter) {
       return { section: sectionData, chapter };
@@ -71,7 +77,7 @@ export async function getTopicBySlug(topicSlug: string) {
     if (!sectionData) continue;
 
     for (const chapter of sectionData.chapters ?? []) {
-      const topicGroup = chapter.topicGroups?.find((tg) => (tg.slug as any) === topicSlug);
+      const topicGroup = chapter.topicGroups?.find((tg) => slugToString(tg.slug) === topicSlug);
 
       if (topicGroup) {
         return { section: sectionData, chapter, topicGroup };
@@ -92,7 +98,7 @@ export async function getSkillBySlug(skillSlug: string) {
 
     for (const chapter of sectionData.chapters ?? []) {
       for (const topicGroup of chapter.topicGroups ?? []) {
-        const skill = topicGroup.skills?.find((sk) => (sk.slug as any) === skillSlug);
+        const skill = topicGroup.skills?.find((sk) => slugToString(sk.slug) === skillSlug);
 
         if (skill) {
           return { section: sectionData, chapter, topicGroup, skill };
@@ -106,6 +112,110 @@ export async function getSkillBySlug(skillSlug: string) {
 
 export async function getSectionFilters(): Promise<Section[]> {
   return fetchSanity<Section[]>(queries.getSectionFiltersQuery);
+}
+
+type LessonSectionNode = {
+  _id: string;
+  name: string;
+  slug_str?: string;
+  chapters?: Array<{
+    _key: string;
+    name?: string;
+    slug_str?: string;
+    topicGroups?: Array<{
+      _key: string;
+      name?: string;
+      slug_str?: string;
+      skills?: Array<{
+        _key: string;
+        name?: string;
+        slug_str?: string;
+        coverImage?: Image;
+        description?: string;
+      }>;
+    }>;
+  }>;
+};
+
+const flattenLessonSkills = (sections: LessonSectionNode[]): LessonSkillListItem[] => {
+  const items: LessonSkillListItem[] = [];
+
+  sections.forEach((section) => {
+    section.chapters?.forEach((chapter) => {
+      chapter.topicGroups?.forEach((topic) => {
+        topic.skills?.forEach((skill) => {
+          if (!skill?.slug_str || !skill.name) return;
+          items.push({
+            id: skill._key ?? skill.slug_str,
+            title: skill.name,
+            slug: skill.slug_str,
+            coverImage: skill.coverImage,
+            description: skill.description,
+            section: {
+              name: section.name,
+              slug: section.slug_str ?? '',
+            },
+            chapter: chapter.slug_str
+              ? {
+                  name: chapter.name,
+                  slug: chapter.slug_str,
+                }
+              : undefined,
+            topic: topic.slug_str
+              ? {
+                  name: topic.name,
+                  slug: topic.slug_str,
+                }
+              : undefined,
+          });
+        });
+      });
+    });
+  });
+
+  return items;
+};
+
+export type LessonSkillFilters = {
+  section?: string;
+  chapter?: string;
+  topic?: string;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+};
+
+export async function getLessonSkills({ section, chapter, topic, search, page = 1, pageSize = 12 }: LessonSkillFilters = {}) {
+  const sanitizedPageSize = Number.isNaN(pageSize) || pageSize <= 0 ? 12 : pageSize;
+
+  const sections = await fetchSanity<LessonSectionNode[]>(queries.lessonsSkillsQuery, {
+    sectionSlug: section ?? null,
+    chapterSlug: chapter ?? null,
+    topicSlug: topic ?? null,
+  });
+
+  const flattened = flattenLessonSkills(sections);
+
+  const keyword = search?.trim().toLowerCase();
+  const filtered = keyword ? flattened.filter((item) => item.title.toLowerCase().includes(keyword)) : flattened;
+
+  const totalItems = filtered.length;
+  const totalPages = totalItems === 0 ? 0 : Math.ceil(totalItems / sanitizedPageSize);
+  const safePage = totalPages === 0 ? 1 : Math.min(Math.max(page, 1), totalPages);
+  const startIndex = (safePage - 1) * sanitizedPageSize;
+  const paginatedItems = totalItems === 0 ? [] : filtered.slice(startIndex, startIndex + sanitizedPageSize);
+
+  return {
+    items: paginatedItems,
+    pagination: {
+      totalItems,
+      totalPages,
+      currentPage: safePage,
+      pageSize: sanitizedPageSize,
+      hasNext: totalPages !== 0 && safePage < totalPages,
+      hasPrev: totalPages !== 0 && safePage > 1,
+    },
+  };
 }
 
 export async function getQuizzesBySkillName(skillName: string): Promise<Quiz[]> {

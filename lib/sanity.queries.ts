@@ -91,3 +91,28 @@ export const getSectionFiltersQuery = groq`
     }
   }
 `;
+
+export const lessonsSkillsQuery = groq`
+  *[_type == "section" && (!defined($sectionSlug) || slug.current == $sectionSlug)] | order(order asc) {
+    _id,
+    name,
+    "slug_str": slug.current,
+    chapters[!defined($chapterSlug) || slug.current == $chapterSlug] | order(order asc) {
+      _key,
+      name,
+      "slug_str": slug.current,
+      topicGroups[!defined($topicSlug) || slug.current == $topicSlug] | order(order asc) {
+        _key,
+        name,
+        "slug_str": slug.current,
+        skills | order(order asc) {
+          _key,
+          name,
+          "slug_str": slug.current,
+          coverImage,
+          description
+        }
+      }
+    }
+  }
+`;
