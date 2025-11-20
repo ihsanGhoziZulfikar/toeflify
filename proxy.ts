@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CookieOptions, createServerClient } from '@supabase/ssr';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -45,7 +45,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const protectedPaths = ['/quiz', '/history', '/custom-exercise'];
+  const protectedPaths = ['/quiz', '/history', '/custom-exercise', '/profile'];
   const authPaths = ['/login', '/register'];
 
   const isProtectedRoute = protectedPaths.some((path) =>
@@ -55,7 +55,13 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = authPaths.includes(pathname);
 
   if (!user && isProtectedRoute) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    const loginUrl = new URL('/login', request.url);
+
+    const next = pathname + request.nextUrl.search;
+
+    loginUrl.searchParams.set('next', next);
+
+    return NextResponse.redirect(loginUrl);
   }
 
   if (user && isAuthRoute) {
