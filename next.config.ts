@@ -1,12 +1,13 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  turbopack: {
-    rules: { '*.svg': { loaders: ['@svgr/webpack'], as: '*.js' } },
-  },
-  experimental: {
-    turbopackFileSystemCacheForDev: true,
-  },
+  // Turbopack disabled due to Windows OS resource limitations (error 1450)
+  // turbopack: {
+  //   rules: { '*.svg': { loaders: ['@svgr/webpack'], as: '*.js' } },
+  // },
+  // experimental: {
+  //   turbopackFileSystemCacheForDev: true,
+  // },
   images: {
     remotePatterns: [
       {
