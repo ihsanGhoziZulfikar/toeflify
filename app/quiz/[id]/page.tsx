@@ -44,7 +44,7 @@ function QuizPageContent() {
         }));
 
         setQuestions(transformedQuestions);
-        setQuizTitle(quizData.topics);
+        setQuizTitle(`${quizData.interests} - ${quizData.difficulty.charAt(0).toUpperCase() + quizData.difficulty.slice(1)} Level`);
         setQuizDifficulty(quizData.difficulty);
       } catch (err) {
         console.error('❌ Failed to load quiz:', err);

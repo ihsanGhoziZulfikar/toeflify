@@ -23,7 +23,7 @@ const quizSchema = z.object({
 
 interface ExercisePayload {
   skills: string[];
-  topics: string;
+  interests: string;
   difficulty: string;
   number: number;
   toggles: {
@@ -46,10 +46,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { skills, topics, difficulty, number, toggles, additional }: ExercisePayload = await req.json();
+    const { skills, interests, difficulty, number, toggles, additional }: ExercisePayload = await req.json();
 
-    if (!topics) {
-      return NextResponse.json({ error: 'Topics are required' }, { status: 400 });
+    if (!interests) {
+      return NextResponse.json({ error: 'Interests are required' }, { status: 400 });
     }
 
     const systemPrompt = `You are an expert quiz generator, specialized in English language learning (like TOEFL or general grammar).
@@ -62,7 +62,7 @@ ${toggles.explanation ? 'You MUST provide a brief explanation for each answer.' 
     const userPrompt = `
     Please generate the quiz now with these parameters:
     - Skills to Focus On: ${skills.length > 0 ? skills.join(', ') : 'General English'}
-    - Specific Topics: ${topics || 'General topics'}
+    - Specific Interests: ${interests || 'General interests'}
     - Difficulty: ${difficulty || 'Medium'}
     - Number of Questions: ${number}
     - Additional Instructions: ${additional || 'None'}
@@ -81,8 +81,8 @@ ${toggles.explanation ? 'You MUST provide a brief explanation for each answer.' 
       .insert([
         {
           user_id: user.id,
-          title: `Custom Exercise: ${topics || 'Untitled'}`,
-          topics: topics,
+          title: `Custom Exercise: ${interests || 'Untitled'}`,
+          interests: interests,
           difficulty: difficulty || 'medium',
           skills: skills,
           total_questions: generatedQuiz.questions.length,
