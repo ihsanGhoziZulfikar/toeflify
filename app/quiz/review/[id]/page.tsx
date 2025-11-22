@@ -23,6 +23,7 @@ function ReviewQuizPageComponent() {
   const router = useRouter();
   const params = useParams();
   const [questions, setQuestions] = useState<TransformedQuestion[]>([]);
+  const [score, setScore] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const attemptId = params.id;
@@ -49,6 +50,7 @@ function ReviewQuizPageComponent() {
 
         const data = await res.json();
         setQuestions(data.questions || []);
+        setScore(data.score);
       } catch (err) {
         setError('Something went wrong.');
       } finally {
@@ -101,9 +103,17 @@ function ReviewQuizPageComponent() {
         </button>
       </div>
 
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 font-sans">
-        Review Exercise
-      </h1>
+      <div className="flex justify-between items-center mb-8 mx-3">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 font-rowdies">
+          Review Exercise
+        </h1>
+
+        {score !== null && (
+          <span className="text-lg font-semibold text-white px-3 py-1 bg-primary rounded-lg font-saira">
+            Score: {score}
+          </span>
+        )}
+      </div>
 
       <div className="bg-white rounded-xl shadow-md p-6 sm:p-8">
         {questions.length === 0 ? (
