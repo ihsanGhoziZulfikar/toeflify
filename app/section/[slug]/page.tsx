@@ -7,6 +7,7 @@ import { getSectionBySlug } from '@/lib/data-manager';
 import { urlFor } from '@/lib/imageFallback';
 import CustomPortableTextBlock from '@/components/CustomPortableTextBlock';
 import BreadcrumbLayout from '@/components/BreadcrumbLayout';
+import ImageCustom from '@/components/ImageCustom';
 
 interface PageProps {
   params: { slug: string };
@@ -29,7 +30,8 @@ export default async function SectionPage({ params }: PageProps) {
   // Page data variables
   const title = section.name;
   const description = section.description;
-  const imageSrc = urlFor(section.coverImage);
+  // const imageSrc = urlFor(section.coverImage);
+  const imageUrl = urlFor(section.coverImage);
   const chaptersCount = section.totalChapters;
   const topicsCount = section.totalTopics;
   const skillsCount = section.totalSkills;
@@ -61,8 +63,12 @@ export default async function SectionPage({ params }: PageProps) {
         {/* Top Section */}
         <div className="flex justify-center items-center w-full bg-blue-50 p-6">
           {/* Left Image */}
-          <div className="w-1/6">
-            <Image src={imageSrc} alt={title} width={300} height={200} className="rounded-xl object-cover" />
+          <div className="w-1/6 relative h-40 bg-linear-to-br from-blue-50 to-teal-50">
+            <ImageCustom
+              src={imageUrl}
+              alt={title}
+            />
+            {/* <Image src={imageSrc} alt={title} width={300} height={200} className="rounded-xl object-cover" /> */}
           </div>
 
           {/* Right Title */}
