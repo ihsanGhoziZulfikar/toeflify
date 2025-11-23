@@ -5,7 +5,7 @@ import '@/themes/index.css';
 import { Book, ListChecks, Star } from 'lucide-react';
 import { getSectionBySlug } from '@/lib/data-manager';
 import { urlFor } from '@/lib/imageFallback';
-import PortableTextBlock from '@/components/PortableTextBlock';
+import CustomPortableTextBlock from '@/components/CustomPortableTextBlock';
 import BreadcrumbLayout from '@/components/BreadcrumbLayout';
 
 interface PageProps {
@@ -97,7 +97,7 @@ export default async function SectionPage({ params }: PageProps) {
           <div className="w-full">
             {/* <p className="text-gray-700 leading-relaxed pb-5">{description}</p> */}
             <div className="prose prose-gray max-w-none pb-5">
-              <PortableTextBlock value={description} />
+              <CustomPortableTextBlock value={description} />
             </div>
 
             <div className="text-2xl font-bold text-primary mb-2">Chapters</div>
