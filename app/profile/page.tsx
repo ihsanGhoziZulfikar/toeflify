@@ -1,20 +1,32 @@
 "use client";
 
 import ProfileDropdown from "@/components/ProfileDropdown";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User, Mail, Lock, Trash2, AlertTriangle, Camera, BookOpen, Mic, Headphones, PenTool } from "lucide-react";
+import { useUserStore } from "@/lib/store/userStore";
+import Image from "next/image";
 
 export default function ProfilePage() {
+  const { profile, isLoading } = useUserStore();
+
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: "Kelompok 8 PKN",
-    email: "kelompok8@example.com",
-    joinedDate: "January 2024",
-    level: "A1",
+    name: "",
+    email: "",
   });
+
+  // Update formData when profile is loaded
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        name: profile.full_name,
+        email: profile.email,
+      });
+    }
+  }, [profile]);
 
   // Course progress data
   const courseProgress = {
@@ -84,6 +96,26 @@ export default function ProfilePage() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen py-10 flex justify-center items-center">
+        <div className="text-center">
+          <div className="text-xl font-saira text-gray-600">Loading profile...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen py-10 flex justify-center items-center">
+        <div className="text-center">
+          <div className="text-xl font-saira text-gray-600">Please log in to view profile</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen py-10 flex justify-center w-full">
       <div className="flex gap-5 w-full max-w-6xl mx-auto">
@@ -103,8 +135,13 @@ export default function ProfilePage() {
             {/* Profile Picture & Level */}
             <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-200">
               <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-teal-600 to-teal-800 flex items-center justify-center text-white text-4xl font-bold">
-                  K
+                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 relative bg-white">
+                  <Image
+                    src={profile.image_url ?? '/assets/images/profile_default.jpg'}
+                    alt={profile.full_name}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
                 <label
                   htmlFor="profile-picture-upload"
@@ -122,11 +159,11 @@ export default function ProfilePage() {
               </div>
               <div>
                 <h2 className="text-2xl font-saira font-semibold text-gray-800">
-                  {formData.name}
+                  {profile.full_name}
                 </h2>
-                <p className="text-primary font-medium">Level {formData.level}</p>
+                <p className="text-primary font-medium">Level {profile.level}</p>
                 <p className="text-sm text-gray-500 mt-1">
-                  Member since {formData.joinedDate}
+                  Score: {profile.score}
                 </p>
               </div>
             </div>
@@ -208,7 +245,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Course Progress Section */}
+          {/* Course Progress Section - TODO: Implement real progress data */}
           <div className="w-full max-w-4xl bg-white rounded-lg shadow-sm p-8 mt-6">
             <div className="mb-6">
               <div className="flex items-baseline justify-between mb-2">
@@ -217,14 +254,14 @@ export default function ProfilePage() {
                 </h2>
                 <div className="text-right">
                   <span className="text-3xl font-bold text-primary">
-                    {courseProgress.totalScore}
+                    {profile.score}
                   </span>
-                  <span className="text-gray-500">/{courseProgress.maxScore}</span>
+                  <span className="text-gray-500">/120</span>
                 </div>
               </div>
             </div>
 
-            {/* Skills Grid */}
+            {/* Skills Grid - Using dummy data for now */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {courseProgress.skills.map((skill) => (
                 <div
