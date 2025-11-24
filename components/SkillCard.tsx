@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { isEmpty, toTitleCase } from '@/lib/helper';
+import ImageCustom from './ImageCustom';
 
 interface SkillCardProps {
   title: string;
@@ -44,14 +44,7 @@ export default function SkillCard({
 
         <div className="order-1 md:order-0 md:justify-end justify-center flex">
           <div className="w-[200px] h-[120px] flex-shrink-0 overflow-hidden rounded-lg">
-            <Image
-              src={imageSrc}
-              alt={title}
-              width={200}
-              height={120}
-              className="object-contain w-full h-full"
-              priority
-            />
+            <ImageCustom src={imageSrc} alt={title}/>
           </div>
         </div>
       </div>
