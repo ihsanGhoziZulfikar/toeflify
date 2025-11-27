@@ -1,7 +1,15 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Rowdies, Saira, Open_Sans, Outfit } from 'next/font/google';
+import {
+  Geist,
+  Geist_Mono,
+  Rowdies,
+  Saira,
+  Open_Sans,
+  Outfit,
+} from 'next/font/google';
 import './globals.css';
 import ConditionalLayout from '@/components/ConditionalLayout';
+import { Toaster } from 'react-hot-toast';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -42,8 +50,16 @@ export const metadata: Metadata = {
     default: 'Toeflify',
     template: '%s | Toeflify',
   },
-  description: 'Toeflify — focused TOEFL iBT & ITP preparation: lessons, practice tests, and guided tracks to raise your score.',
-  keywords: ['TOEFL', 'TOEFL ITP', 'TOEFL iBT', 'English test prep', 'test preparation', 'TOEFL practice'],
+  description:
+    'Toeflify — focused TOEFL iBT & ITP preparation: lessons, practice tests, and guided tracks to raise your score.',
+  keywords: [
+    'TOEFL',
+    'TOEFL ITP',
+    'TOEFL iBT',
+    'English test prep',
+    'test preparation',
+    'TOEFL practice',
+  ],
   creator: 'Toeflify',
   authors: [{ name: 'Toeflify' }],
   icons: {
@@ -76,10 +92,21 @@ export default function RootLayout({
           saira.variable,
           openSans.variable,
           outfit.variable,
-          'antialiased'
+          'antialiased',
         ].join(' ')}
       >
         <ConditionalLayout>{children}</ConditionalLayout>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          toastOptions={{
+            style: {
+              borderRadius: '8px',
+              background: '#333',
+              color: '#fff',
+            },
+          }}
+        />
       </body>
     </html>
   );

@@ -1,21 +1,37 @@
-"use client";
+'use client';
 
-import ProfileDropdown from "@/components/ProfileDropdown";
-import { useState, useEffect } from "react";
-import { User, Mail, Lock, Trash2, AlertTriangle, Camera, BookOpen, Mic, Headphones, PenTool } from "lucide-react";
-import { useUserStore } from "@/lib/store/userStore";
-import Image from "next/image";
+import ProfileDropdown from '@/components/ProfileDropdown';
+import { useEffect, useState } from 'react';
+import {
+  User,
+  Mail,
+  Lock,
+  Trash2,
+  AlertTriangle,
+  Camera,
+  BookOpen,
+  Mic,
+  Headphones,
+  PenTool,
+} from 'lucide-react';
+import { useUserStore } from '@/lib/store/userStore';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { uploadProfilePicture } from '@/lib/services/profileServices';
+import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
-  const { profile, isLoading } = useUserStore();
-
+  const router = useRouter();
+  const { profile, setProfile, fetchProfile } = useUserStore();
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const hasPassword = profile?.has_password;
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: '',
+    email: '',
   });
 
   // Update formData when profile is loaded
@@ -33,18 +49,57 @@ export default function ProfilePage() {
     totalScore: 102,
     maxScore: 120,
     skills: [
-      { name: "Reading", completed: 28, total: 30, color: "bg-blue-100", textColor: "text-blue-600", icon: <BookOpen size={20} /> },
-      { name: "Listening", completed: 26, total: 30, color: "bg-green-100", textColor: "text-green-600", icon: <Headphones size={20} /> },
-      { name: "Speaking", completed: 24, total: 30, color: "bg-orange-100", textColor: "text-orange-600", icon: <Mic size={20} /> },
-      { name: "Writing", completed: 24, total: 30, color: "bg-purple-100", textColor: "text-purple-600", icon: <PenTool size={20} /> },
+      {
+        name: 'Reading',
+        completed: 28,
+        total: 30,
+        color: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        icon: <BookOpen size={20} />,
+      },
+      {
+        name: 'Listening',
+        completed: 26,
+        total: 30,
+        color: 'bg-green-100',
+        textColor: 'text-green-600',
+        icon: <Headphones size={20} />,
+      },
+      {
+        name: 'Speaking',
+        completed: 24,
+        total: 30,
+        color: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        icon: <Mic size={20} />,
+      },
+      {
+        name: 'Writing',
+        completed: 24,
+        total: 30,
+        color: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        icon: <PenTool size={20} />,
+      },
     ],
   };
 
   const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
+
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        name: profile.full_name || '',
+        email: profile.email || '',
+      });
+    } else {
+      fetchProfile();
+    }
+  }, [profile, fetchProfile]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -60,43 +115,171 @@ export default function ProfilePage() {
     });
   };
 
-  const handleSave = () => {
-    // TODO: Add API call to save profile
-    setIsEditing(false);
+  const handleSave = async () => {
+    setLoading(true);
+
+    const promise = new Promise(async (resolve, reject) => {
+      try {
+        const res = await fetch('/api/profile/update', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullName: formData.name,
+            email: formData.email,
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        if (profile) {
+          setProfile({
+            ...profile,
+            full_name: formData.name,
+          });
+        }
+
+        setIsEditing(false);
+        router.refresh();
+
+        resolve(data);
+      } catch (error) {
+        reject(error);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    await toast.promise(promise, {
+      loading: 'Saving changes...',
+      success: 'Profile updated successfully!',
+      error: (err) => err.message,
+    });
   };
 
-  const handleChangePassword = () => {
-    // TODO: Add API call to change password
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("New password and confirm password do not match!");
+  const handleChangePassword = async () => {
+    if (hasPassword && !passwordData.currentPassword) {
+      toast.error('Current password is required');
       return;
     }
-    alert("Password changed successfully!");
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+
+    if (!passwordData.newPassword || !passwordData.confirmPassword) {
+      toast.error('Please fill in new password fields');
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('New password and confirmation do not match!');
+      return;
+    }
+
+    if (passwordData.newPassword.length < 8) {
+      toast.error('New password must be at least 8 characters');
+      return;
+    }
+
+    setLoading(true);
+
+    const promise = new Promise(async (resolve, reject) => {
+      try {
+        const res = await fetch('/api/profile/change-password', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            currentPassword: passwordData.currentPassword,
+            newPassword: passwordData.newPassword,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || 'Failed to change password');
+
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        });
+        setIsChangingPassword(false);
+
+        if (profile) {
+          setProfile({
+            ...profile,
+            has_password: true,
+          });
+        }
+
+        router.refresh();
+
+        resolve(data);
+      } catch (error) {
+        reject(error);
+      } finally {
+        setLoading(false);
+      }
     });
-    setIsChangingPassword(false);
+
+    await toast.promise(promise, {
+      loading: 'Updating password...',
+      success: hasPassword
+        ? 'Password changed successfully!'
+        : 'Set Password successfully!',
+      error: (err) => err.message,
+    });
   };
 
   const handleDeleteAccount = () => {
     // TODO: Add API call to delete account
-    alert("Account deleted successfully!");
+    alert('Account deleted successfully!');
     setShowDeleteModal(false);
     // Redirect to home or login page
   };
 
-  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePictureChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // TODO: Add API call to upload profile picture
-      console.log("Selected file:", file);
-      alert("Profile picture will be uploaded!");
-    }
+    if (!file || !profile) return;
+
+    setLoading(true);
+
+    const promise = new Promise(async (resolve, reject) => {
+      try {
+        const publicUrl = await uploadProfilePicture(
+          file,
+          profile.id,
+          profile.image_url
+        );
+
+        const res = await fetch('/api/profile/update', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl: publicUrl }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || 'Failed to update database');
+
+        setProfile({ ...profile, image_url: publicUrl });
+        router.refresh();
+
+        resolve(data);
+      } catch (error) {
+        reject(error);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    await toast.promise(promise, {
+      loading: 'Saving picture...',
+      success: 'Profile picture updated successfully!',
+      error: (err) => err.message,
+    });
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen py-10 flex justify-center items-center">
         <div className="text-center">
@@ -137,8 +320,10 @@ export default function ProfilePage() {
               <div className="relative">
                 <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 relative bg-white">
                   <Image
-                    src={profile.image_url ?? '/assets/images/profile_default.jpg'}
-                    alt={profile.full_name}
+                    src={
+                      profile?.image_url || '/assets/images/profile_default.jpg'
+                    }
+                    alt={profile?.full_name ?? 'Profile Picture'}
                     fill
                     className="object-cover"
                   />
@@ -147,7 +332,11 @@ export default function ProfilePage() {
                   htmlFor="profile-picture-upload"
                   className="absolute bottom-0 right-0 w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-teal-700 transition-colors shadow-lg"
                 >
-                  <Camera size={16} className="text-white" />
+                  {loading ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <Camera size={16} className="text-white" />
+                  )}
                 </label>
                 <input
                   id="profile-picture-upload"
@@ -155,15 +344,21 @@ export default function ProfilePage() {
                   accept="image/*"
                   onChange={handleProfilePictureChange}
                   className="hidden"
+                  disabled={loading}
                 />
               </div>
               <div>
                 <h2 className="text-2xl font-saira font-semibold text-gray-800">
-                  {profile.full_name}
+                  {profile?.full_name}
                 </h2>
-                <p className="text-primary font-medium">Level {profile.level}</p>
+                <p className="text-primary font-medium">
+                  Level {profile?.level}
+                </p>
                 <p className="text-sm text-gray-500 mt-1">
-                  Score: {profile.score}
+                  Score: {profile?.score}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Member since {new Date().getFullYear()}{' '}
                 </p>
               </div>
             </div>
@@ -185,6 +380,7 @@ export default function ProfilePage() {
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
+                      disabled={loading}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                     />
                   ) : (
@@ -208,6 +404,7 @@ export default function ProfilePage() {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
+                      disabled={loading}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                     />
                   ) : (
@@ -222,12 +419,14 @@ export default function ProfilePage() {
                   <>
                     <button
                       onClick={handleSave}
+                      disabled={loading}
                       className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium"
                     >
-                      Save Changes
+                      {loading ? 'Saving...' : 'Save Changes'}
                     </button>
                     <button
                       onClick={() => setIsEditing(false)}
+                      disabled={loading}
                       className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                     >
                       Cancel
@@ -256,7 +455,9 @@ export default function ProfilePage() {
                   <span className="text-3xl font-bold text-primary">
                     {profile.score}
                   </span>
-                  <span className="text-gray-500">/120</span>
+                  <span className="text-gray-500">
+                    /{courseProgress.maxScore}
+                  </span>
                 </div>
               </div>
             </div>
@@ -297,19 +498,21 @@ export default function ProfilePage() {
 
             {isChangingPassword ? (
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-2">
-                    Current Password
-                  </label>
-                  <input
-                    type="password"
-                    name="currentPassword"
-                    value={passwordData.currentPassword}
-                    onChange={handlePasswordChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                    placeholder="Enter current password"
-                  />
-                </div>
+                {hasPassword && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                      Current Password
+                    </label>
+                    <input
+                      type="password"
+                      name="currentPassword"
+                      value={passwordData.currentPassword}
+                      onChange={handlePasswordChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      placeholder="Enter current password"
+                    />
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-2">
                     New Password
@@ -341,15 +544,15 @@ export default function ProfilePage() {
                     onClick={handleChangePassword}
                     className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium"
                   >
-                    Update Password
+                    {hasPassword ? 'Update Password' : 'Set Password'}
                   </button>
                   <button
                     onClick={() => {
                       setIsChangingPassword(false);
                       setPasswordData({
-                        currentPassword: "",
-                        newPassword: "",
-                        confirmPassword: "",
+                        currentPassword: '',
+                        newPassword: '',
+                        confirmPassword: '',
                       });
                     }}
                     className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
@@ -379,7 +582,8 @@ export default function ProfilePage() {
               </h2>
             </div>
             <p className="text-gray-600 mb-4">
-              Once you delete your account, there is no going back. Please be certain.
+              Once you delete your account, there is no going back. Please be
+              certain.
             </p>
             <button
               onClick={() => setShowDeleteModal(true)}
@@ -404,8 +608,8 @@ export default function ProfilePage() {
               </h3>
             </div>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete your account? This action cannot be undone
-              and all your data will be permanently removed.
+              Are you sure you want to delete your account? This action cannot
+              be undone and all your data will be permanently removed.
             </p>
             <div className="flex gap-3">
               <button
