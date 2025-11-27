@@ -8,6 +8,7 @@ export type Profile = {
   image_url?: string;
   level: string;
   score: number;
+  has_password: boolean;
 };
 
 interface UserState {
@@ -36,21 +37,34 @@ export const useUserStore = create<UserState>((set) => ({
         throw authError || new Error('No user found');
       }
 
-      const { data: profileData, error: profileError } = await supabase
+      const profilePromise = supabase
         .from('profiles')
         .select('id, full_name, image_url, level, score')
         .eq('id', user.id)
         .single();
 
-      if (profileError) throw profileError;
+      const passwordPromise = supabase.rpc('user_has_password');
+
+      const [profileResponse, passwordResponse] = await Promise.all([
+        profilePromise,
+        passwordPromise,
+      ]);
+
+      if (profileResponse.error) {
+        throw profileResponse.error;
+      }
+
+      const profileData = profileResponse.data;
+      const hasPasswordData = passwordResponse.data;
 
       const combinedProfile: Profile = {
         id: user.id,
-        full_name: profileData.full_name ?? user.user_metadata.full_name,
-        image_url: profileData.image_url ?? user.user_metadata.avatar_url,
-        level: profileData.level,
-        score: profileData.score,
+        full_name: profileData?.full_name ?? user.user_metadata.full_name,
+        image_url: profileData?.image_url ?? user.user_metadata.avatar_url,
+        level: profileData?.level ?? 'A1',
+        score: profileData?.score ?? 0,
         email: user.email!,
+        has_password: hasPasswordData ?? false,
       };
 
       set({ profile: combinedProfile, isLoading: false });

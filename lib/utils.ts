@@ -13,7 +13,13 @@ export function portableTextToString(blocks: PortableTextBlock[]): string {
     return '';
   }
   return blocks
-    .filter((block): block is PortableTextBlock & { children: { _type: string; text?: string }[] } => block._type === 'block' && Array.isArray(block.children))
+    .filter(
+      (
+        block
+      ): block is PortableTextBlock & {
+        children: { _type: string; text?: string }[];
+      } => block._type === 'block' && Array.isArray(block.children)
+    )
     .map((block) => {
       return block.children.map((child) => child.text || '').join('');
     })
@@ -25,6 +31,7 @@ export function portableTextToString(blocks: PortableTextBlock[]): string {
  * @param data - The JSON data to download
  * @param filename - The name of the file to save as
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function downloadJSON(data: any, filename: string) {
   // Buat string JSON dengan format yang rapi (pretty-print)
   const jsonStr = JSON.stringify(data, null, 2);
@@ -48,3 +55,26 @@ export function downloadJSON(data: any, filename: string) {
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export const getPathFromUrl = (
+  url: string,
+  bucketName: string
+): string | null => {
+  try {
+    const parts = url.split(`/${bucketName}/`);
+
+    if (parts.length < 2) return null;
+
+    let path = parts[1];
+
+    if (path.includes('?')) {
+      path = path.split('?')[0];
+    }
+
+    return decodeURIComponent(path);
+  } catch (e) {
+    console.error('Error parsing URL', e);
+
+    return null;
+  }
+};
