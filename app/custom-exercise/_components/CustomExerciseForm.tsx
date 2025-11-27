@@ -14,7 +14,7 @@ interface CustomExerciseProps {
 export default function CustomExercisePage({ skillNames }: CustomExerciseProps) {
   const router = useRouter();
   const [skills, setSkills] = useState<string[]>([]);
-  const [topics, setTopics] = useState('');
+  const [interests, setInterests] = useState('');
   const [difficulty, setDifficulty] = useState('');
   const [number, setNumber] = useState(10);
   const [toggles, setToggles] = useState({ answerKey: false, explanation: false });
@@ -27,7 +27,7 @@ export default function CustomExercisePage({ skillNames }: CustomExerciseProps) 
 
     const payload = {
       skills,
-      topics,
+      interests,
       difficulty,
       number,
       toggles,
@@ -74,7 +74,7 @@ export default function CustomExercisePage({ skillNames }: CustomExerciseProps) 
 
       <form onSubmit={handleSubmit} className="w-full max-w-3xl bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-6">
         <MultiSelect label="Skills to Focus On" placeholder="Select skills" options={skillNames} value={skills} onChange={setSkills} />
-        <TextInput type="text" label="Topics" placeholder="e.g., culinary, football" value={topics} onChange={setTopics} />
+        <TextInput type="text" label="Topics" placeholder="e.g., culinary, football" value={interests} onChange={setInterests} />
 
         <div className="flex flex-wrap justify-between gap-6">
           <RadioSelect label="Difficulity" options={['easy', 'medium', 'hard']} value={difficulty} onChange={setDifficulty} />

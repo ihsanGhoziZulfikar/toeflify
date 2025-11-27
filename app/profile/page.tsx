@@ -34,6 +34,16 @@ export default function ProfilePage() {
     email: '',
   });
 
+  // Update formData when profile is loaded
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        name: profile.full_name,
+        email: profile.email,
+      });
+    }
+  }, [profile]);
+
   // Course progress data
   const courseProgress = {
     totalScore: 102,
@@ -269,6 +279,26 @@ export default function ProfilePage() {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen py-10 flex justify-center items-center">
+        <div className="text-center">
+          <div className="text-xl font-saira text-gray-600">Loading profile...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen py-10 flex justify-center items-center">
+        <div className="text-center">
+          <div className="text-xl font-saira text-gray-600">Please log in to view profile</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen py-10 flex justify-center w-full">
       <div className="flex gap-5 w-full max-w-6xl mx-auto">
@@ -414,7 +444,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Course Progress Section */}
+          {/* Course Progress Section - TODO: Implement real progress data */}
           <div className="w-full max-w-4xl bg-white rounded-lg shadow-sm p-8 mt-6">
             <div className="mb-6">
               <div className="flex items-baseline justify-between mb-2">
@@ -423,7 +453,7 @@ export default function ProfilePage() {
                 </h2>
                 <div className="text-right">
                   <span className="text-3xl font-bold text-primary">
-                    {courseProgress.totalScore}
+                    {profile.score}
                   </span>
                   <span className="text-gray-500">
                     /{courseProgress.maxScore}
@@ -432,7 +462,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Skills Grid */}
+            {/* Skills Grid - Using dummy data for now */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {courseProgress.skills.map((skill) => (
                 <div

@@ -7,7 +7,7 @@ import { CustomTable, Quiz } from '@/lib/types';
 import BreadcrumbLayout from '@/components/BreadcrumbLayout';
 import Link from 'next/link';
 import SkillHeader from '@/components/SkillHeader';
-
+import CustomPortableTextBlock from '@/components/CustomPortableTextBlock';
 
 
 interface ContentSectionProps {
@@ -37,7 +37,7 @@ function ContentSection({ content }: ContentSectionProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6 mb-4">
       {/* <h2 className="text-xl font-bold text-gray-900 mb-4">{title}</h2> */}
-      <PortableText value={content} />
+      <CustomPortableTextBlock value={content} />
     </div>
   );
 }
@@ -48,7 +48,7 @@ function ExerciseSection({ title, instruction, items }: ExerciseSectionProps) {
       <h2 className="text-xl font-bold text-gray-900 mb-4">{title}</h2>
       <p className="text-gray-700 mb-6 leading-relaxed">{instruction}</p>
       <div className="space-y-3">
-        <PortableText value={items} />
+        <CustomPortableTextBlock value={items} />
       </div>
     </div>
   );

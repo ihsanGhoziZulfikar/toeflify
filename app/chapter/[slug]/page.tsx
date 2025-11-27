@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { urlFor } from '@/lib/imageFallback';
 import { getChapterBySlug } from '@/lib/data-manager';
@@ -7,6 +6,7 @@ import BreadcrumbLayout from '@/components/BreadcrumbLayout';
 import {toTitleCase} from '@/lib/helper';
 import ChapterHeader from '@/components/ChapterHeader';
 import ChapterContent from '@/components/ChapterContent';
+import ImageCustom from '@/components/ImageCustom';
 
 interface TopicCardProps {
   title: string;
@@ -35,21 +35,11 @@ function TopicCard({ title, description, href, imageUrl }: TopicCardProps) {
   return (
     <Link href={href} className="block group">
       <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-        <div className="relative h-35 bg-linear-to-br from-blue-50 to-teal-50">
-          {imageUrl ? (
-            <Image src={imageUrl} alt={title} fill className="object-cover" />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white rounded-lg shadow-lg p-4 w-32 h-30 flex flex-col items-center justify-center">
-                <div className="text-gray-800 text-xs line-clamp-3 font-bold text-center mb-2">{toTitleCase(title)}</div>
-                <div className="w-full space-y-1">
-                  {[...Array(2)].map((_, i) => (
-                    <div key={i} className="h-1 bg-gray-300 rounded"></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+        <div className="relative h-35">
+          <ImageCustom
+            src={imageUrl}
+            alt={title}
+          />
         </div>
         <div className="p-6">
           <h3 className="text-md line-clamp-2 font-bold font-rowdies text-gray-900 mb-2 group-hover:text-primary transition-colors">

@@ -4,17 +4,49 @@ import React from 'react';
 import { PortableText, PortableTextComponents } from '@portabletext/react';
 import type { PortableTextBlock } from 'sanity';
 
-interface PortableTextBlockProps {
-  value: PortableTextBlock[];
+export interface CustomTable {
+  _type: 'customTable';
+  caption?: string;
+  table: {
+    rows: {
+      _key: string;
+      cells: string[];
+    }[];
+  };
 }
 
-export default function PortableTextBlock({ value }: PortableTextBlockProps) {
-  if (!value || value.length === 0) {
-    return null;
-  }
+interface PortableTextBlockProps {
+  value: (PortableTextBlock | CustomTable)[];
+}
+
+export default function CustomPortableTextBlock({ value }: PortableTextBlockProps) {
+  if (!value || value.length === 0) return null;
 
   const components: PortableTextComponents = {
-    types: {},
+    types: {
+      customTable: ({ value }) => (
+        <div className="overflow-x-auto my-6 border border-gray-300 rounded-md">
+          <table className="min-w-full border-collapse">
+            <tbody>
+              {value.table?.rows?.map((row: any) => (
+                <tr key={row._key} className="border-b border-gray-200">
+                  {row.cells.map((cell: string, index: number) => (
+                    <td key={index} className="px-4 py-2 text-gray-700 border-r last:border-none">
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {value.caption && (
+            <p className="text-sm text-gray-500 text-center italic mt-2">
+              {value.caption}
+            </p>
+          )}
+        </div>
+      )
+    },
     marks: {
       strong: ({ children }) => (
         <strong className="font-semibold text-gray-900">{children}</strong>

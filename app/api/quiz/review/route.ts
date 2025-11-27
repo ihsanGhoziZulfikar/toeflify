@@ -88,7 +88,7 @@ export async function GET(req: Request) {
   });
 
 
-    return NextResponse.json({ questions: review });
+    return NextResponse.json({ questions: review, ...attempt });
   } catch (err) {
     console.error("Review error:", err);
     const message = err instanceof Error ? err.message : String(err);

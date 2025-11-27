@@ -5,8 +5,9 @@ import '@/themes/index.css';
 import { Book, ListChecks, Star } from 'lucide-react';
 import { getSectionBySlug } from '@/lib/data-manager';
 import { urlFor } from '@/lib/imageFallback';
-import PortableTextBlock from '@/components/PortableTextBlock';
+import CustomPortableTextBlock from '@/components/CustomPortableTextBlock';
 import BreadcrumbLayout from '@/components/BreadcrumbLayout';
+import ImageCustom from '@/components/ImageCustom';
 
 interface PageProps {
   params: { slug: string };
@@ -29,7 +30,8 @@ export default async function SectionPage({ params }: PageProps) {
   // Page data variables
   const title = section.name;
   const description = section.description;
-  const imageSrc = urlFor(section.coverImage);
+  // const imageSrc = urlFor(section.coverImage);
+  const imageUrl = urlFor(section.coverImage);
   const chaptersCount = section.totalChapters;
   const topicsCount = section.totalTopics;
   const skillsCount = section.totalSkills;
@@ -61,8 +63,12 @@ export default async function SectionPage({ params }: PageProps) {
         {/* Top Section */}
         <div className="flex justify-center items-center w-full bg-blue-50 p-6">
           {/* Left Image */}
-          <div className="w-1/6">
-            <Image src={imageSrc} alt={title} width={300} height={200} className="rounded-xl object-cover" />
+          <div className="w-1/6 relative h-40 bg-linear-to-br from-blue-50 to-teal-50">
+            <ImageCustom
+              src={imageUrl}
+              alt={title}
+            />
+            {/* <Image src={imageSrc} alt={title} width={300} height={200} className="rounded-xl object-cover" /> */}
           </div>
 
           {/* Right Title */}
@@ -97,7 +103,7 @@ export default async function SectionPage({ params }: PageProps) {
           <div className="w-full">
             {/* <p className="text-gray-700 leading-relaxed pb-5">{description}</p> */}
             <div className="prose prose-gray max-w-none pb-5">
-              <PortableTextBlock value={description} />
+              <CustomPortableTextBlock value={description} />
             </div>
 
             <div className="text-2xl font-bold text-primary mb-2">Chapters</div>
